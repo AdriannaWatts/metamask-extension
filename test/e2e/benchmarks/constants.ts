@@ -16,7 +16,7 @@ export const ALL_TRACES = {
 } as const;
 
 export const WITH_STATE_POWER_USER = {
-  withAccounts: 30,
+  withAccounts: 100,
   withConfirmedTransactions: 40,
   withContacts: 40,
   withErc20Tokens: true,
