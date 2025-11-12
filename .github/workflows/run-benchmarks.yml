@@ -71,6 +71,9 @@ jobs:
       - name: Configure Xvfb
         run: Xvfb -ac :99 -screen 0 1280x1024x16 &
 
+      - name: Debugging with tmate
+        uses: ./.github/actions/actions-tmate
+
       - name: Install AWS CLI (needed in the container)
         run: sudo apt-get install python3-pip && sudo pip install awscli
 
