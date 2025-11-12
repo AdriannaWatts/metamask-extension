@@ -61,15 +61,15 @@ class ChromeDriver {
       args.push('--disable-gpu');
     }
 
-    if (isHeadless('SELENIUM')) {
-      // TODO: Remove notice and consider non-experimental when results are consistent
-      console.warn(
-        '*** Running e2e tests in headless mode is experimental and some tests are known to fail for unknown reasons',
-      );
-      args.push('--headless=new');
-    } else {
-      args.push('--no-sandbox');
-    }
+    // if (isHeadless('SELENIUM')) {
+    //   // TODO: Remove notice and consider non-experimental when results are consistent
+    //   console.warn(
+    //     '*** Running e2e tests in headless mode is experimental and some tests are known to fail for unknown reasons',
+    //   );
+    //   args.push('--headless=new');
+    // } else {
+    args.push('--no-sandbox');
+    // }
 
     const options = new chrome.Options().addArguments(args);
     options.setAcceptInsecureCerts(true);
