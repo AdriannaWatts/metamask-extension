@@ -72,7 +72,7 @@ jobs:
         run: Xvfb -ac :99 -screen 0 1280x1024x16 &
 
       - name: Install AWS CLI (needed in the container)
-        run: sudo pip install awscli
+        run: sudo apt-get install python-pip python-dev && sudo pip install awscli
 
       - name: Run the benchmark
         # Choose a benchmark command from env.COMMANDS
