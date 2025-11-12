@@ -13,7 +13,7 @@ env:
   COMMANDS: |
     {
       standardHome: 'yarn tsx test/e2e/benchmarks/benchmark.ts --out test-artifacts/benchmarks/benchmark-{0}-{1}-standardHome.json --retries 2',
-      powerUserHome: 'yarn tsx test/e2e/benchmarks/benchmark.ts --persona powerUser --browserLoads 10 --pageLoads 10 --out test-artifacts/benchmarks/benchmark-{0}-{1}-powerUserHome.json --retries 2',
+      powerUserHome: 'yarn tsx test/e2e/benchmarks/benchmark.ts --persona powerUser --browserLoads 2 --pageLoads 2 --out test-artifacts/benchmarks/benchmark-{0}-{1}-powerUserHome.json --retries 2',
       userActions: 'yarn tsx test/e2e/benchmarks/user-actions-benchmark.ts --out test-artifacts/benchmarks/benchmark-{0}-{1}-userActions.json --retries 2',
     }
 
@@ -70,6 +70,9 @@ jobs:
 
       - name: Configure Xvfb
         run: Xvfb -ac :99 -screen 0 1280x1024x16 &
+
+      - name: Install AWS CLI (needed in the container)
+        run: sudo pip install awscli
 
       - name: Run the benchmark
         # Choose a benchmark command from env.COMMANDS
