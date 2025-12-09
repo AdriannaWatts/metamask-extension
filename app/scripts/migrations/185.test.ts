@@ -31,7 +31,9 @@ describe(`migration #${VERSION} - remove transaction history`, () => {
       },
     };
 
-    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {
+      // do nothing
+    });
     const newState = await migrate(oldState);
 
     expect(warn).toHaveBeenCalledWith(
@@ -63,16 +65,16 @@ describe(`migration #${VERSION} - remove transaction history`, () => {
 
     const newState = await migrate(oldState);
     const expectedTransactions = {
-        transactions: [
-          {
-            id: 1,
-            chainId: '0x1',
-          },
-          {
-            id: 2,
-            chainId: '0x1',
-          },
-        ],
+      transactions: [
+        {
+          id: 1,
+          chainId: '0x1',
+        },
+        {
+          id: 2,
+          chainId: '0x1',
+        },
+      ],
     };
 
     expect(newState.data.TransactionController).toStrictEqual(
