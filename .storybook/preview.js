@@ -12,7 +12,8 @@ import localeList from '../app/_locales/index.json';
 import * as allLocales from './locales';
 import { I18nProvider, LegacyI18nProvider } from './i18n';
 import testData from './test-data.js';
-import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
+import { CompatRouter, Routes, Route } from 'react-router-dom-v5-compat';
 import { setBackgroundConnection } from '../ui/store/background-connection';
 import { metamaskStorybookTheme } from './metamask-storybook-theme';
 import { DocsContainer } from '@storybook/addon-docs';
@@ -153,25 +154,27 @@ const metamaskDecorator = (story, context) => {
   return (
     <Provider store={store}>
       <MemoryRouter initialEntries={initialEntries}>
-        <AlertMetricsProvider
-          metrics={{
-            trackAlertActionClicked: () => undefined,
-            trackAlertRender: () => undefined,
-            trackInlineAlertClicked: () => undefined,
-          }}
-        >
-          <I18nProvider
-            currentLocale={currentLocale}
-            current={current}
-            en={allLocales.en}
+        <CompatRouter>
+          <AlertMetricsProvider
+            metrics={{
+              trackAlertActionClicked: () => undefined,
+              trackAlertRender: () => undefined,
+              trackInlineAlertClicked: () => undefined,
+            }}
           >
-            <LegacyI18nProvider>
-              <Routes>
-                <Route path={path} element={<StoryComponent />} />
-              </Routes>
-            </LegacyI18nProvider>
-          </I18nProvider>
-        </AlertMetricsProvider>
+            <I18nProvider
+              currentLocale={currentLocale}
+              current={current}
+              en={allLocales.en}
+            >
+              <LegacyI18nProvider>
+                <Routes>
+                  <Route path={path} element={<StoryComponent />} />
+                </Routes>
+              </LegacyI18nProvider>
+            </I18nProvider>
+          </AlertMetricsProvider>
+        </CompatRouter>
       </MemoryRouter>
     </Provider>
   );

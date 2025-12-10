@@ -10,7 +10,6 @@ import {
   loginWithoutBalanceValidation,
 } from '../../page-objects/flows/login.flow';
 import { MockedEndpoint } from '../../mock-e2e';
-import { mockPriceApi } from '../tokens/utils/mocks';
 
 import {
   mockMultichainAccountsFeatureFlagDisabled,
@@ -29,6 +28,7 @@ export async function withMultichainAccountsDesignEnabled(
     title,
     testSpecificMock,
     accountType = AccountType.MultiSRP,
+    state = 2,
     dappOptions,
   }: {
     title?: string;
@@ -36,6 +36,7 @@ export async function withMultichainAccountsDesignEnabled(
       mockServer: Mockttp,
     ) => Promise<MockedEndpoint | MockedEndpoint[]>;
     accountType?: AccountType;
+    state?: number;
     dappOptions?: { numberOfTestDapps?: number; customDappPaths?: string[] };
   },
   test: (driver: Driver) => Promise<void>,
@@ -43,51 +44,50 @@ export async function withMultichainAccountsDesignEnabled(
   let fixture;
 
   switch (accountType) {
+    case AccountType.MultiSRP:
+      fixture = new FixtureBuilder().withKeyringControllerMultiSRP().build();
+      break;
+    case AccountType.SSK:
+      fixture = new FixtureBuilder().withKeyringControllerMultiSRP().build();
+      break;
     case AccountType.HardwareWallet:
-      fixture = new FixtureBuilder()
-        .withLedgerAccount()
-        .withPreferencesControllerShowNativeTokenAsMainBalanceDisabled()
-        .withEnabledNetworks({ eip155: { '0x1': true } })
-        .build();
+      fixture = new FixtureBuilder().withLedgerAccount().build();
       break;
     default:
-      fixture = new FixtureBuilder()
-        .withKeyringControllerMultiSRP()
-        .withPreferencesControllerShowNativeTokenAsMainBalanceDisabled()
-        .withEnabledNetworks({ eip155: { '0x1': true } })
-        .build();
-      break;
+      fixture = new FixtureBuilder().withKeyringControllerMultiSRP().build();
   }
 
   await withFixtures(
     {
       fixtures: fixture,
-      testSpecificMock: async (mockServer: Mockttp) => {
-        const additionalMocks = testSpecificMock
-          ? await testSpecificMock(mockServer)
-          : [];
-        return [await mockPriceApi(mockServer), [additionalMocks]];
-      },
+      testSpecificMock,
       title,
+      forceBip44Version: state === 2 ? 2 : 0,
       dappOptions,
     },
     async ({ driver }: { driver: Driver; mockServer: Mockttp }) => {
-      // Skip strict balance validation for hardware wallets
-      if (accountType === AccountType.HardwareWallet) {
+      // State 2 uses unified account group balance (fiat) and may not equal '25 ETH'.
+      // Skip strict balance validation for hardware wallets and state 2 flows.
+      if (accountType === AccountType.HardwareWallet || state === 2) {
         await loginWithoutBalanceValidation(driver);
       } else {
-        await loginWithBalanceValidation(
-          driver,
-          undefined,
-          undefined,
-          '$85,025.00',
-        );
+        await loginWithBalanceValidation(driver);
       }
       const homePage = new HomePage(driver);
       await homePage.checkPageIsLoaded();
       const headerNavbar = new HeaderNavbar(driver);
-      await headerNavbar.openAccountMenu();
 
+      if (state === 1) {
+        await headerNavbar.openAccountMenu();
+      } else {
+        await headerNavbar.openAccountsPage();
+      }
+
+      const accountListPage = new AccountListPage(driver);
+
+      if (state === 1) {
+        await accountListPage.checkPageIsLoaded();
+      }
       await test(driver);
     },
   );

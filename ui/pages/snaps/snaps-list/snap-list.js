@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom-v5-compat';
 import SnapListItem from '../../../components/app/snaps/snap-list-item';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import {
@@ -38,10 +39,14 @@ import {
 } from '../../../components/multichain/pages/page';
 import { getSnapRoute } from '../../../helpers/utils/util';
 
-const SnapList = () => {
+const SnapList = ({ navigate: navigateProp }) => {
   const t = useI18nContext();
   const settingsRef = useRef();
-  const navigate = useNavigate();
+
+  const hookNavigate = useNavigate();
+
+  // Use passed props if they exist, otherwise fall back to hooks
+  const navigate = navigateProp ?? hookNavigate;
   const onClick = (snap) => {
     navigate(getSnapRoute(snap.id));
   };
@@ -168,6 +173,10 @@ const SnapList = () => {
       </Page>
     </div>
   );
+};
+
+SnapList.propTypes = {
+  navigate: PropTypes.func,
 };
 
 export default SnapList;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { fireEvent } from '@testing-library/react';
-import { renderWithProvider } from '../../../../../test/lib/render-helpers-navigate';
+import { renderWithProvider } from '../../../../../test/lib/render-helpers';
 import TransactionConfirmed from '.';
 
 describe('Transaction Confirmed', () => {
@@ -22,7 +22,7 @@ describe('Transaction Confirmed', () => {
       <TransactionConfirmed.WrappedComponent {...props} />,
     );
 
-    fireEvent.click(queryByText('Ok'));
+    fireEvent.click(queryByText('[ok]'));
 
     expect(props.onSubmit).toHaveBeenCalled();
     expect(props.hideModal).toHaveBeenCalled();
