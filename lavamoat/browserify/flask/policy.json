@@ -945,6 +945,7 @@
         "uuid": true
       }
     },
+<<<<<<< HEAD
     "@metamask/transaction-pay-controller>@metamask/bridge-controller": {
       "globals": {
         "AbortController": true,
@@ -974,6 +975,8 @@
         "uuid": true
       }
     },
+=======
+>>>>>>> main
     "@metamask/bridge-status-controller": {
       "globals": {
         "URLSearchParams": true,
@@ -1678,19 +1681,6 @@
         "lodash": true
       }
     },
-    "@metamask/transaction-pay-controller>@metamask/bridge-controller>@metamask/multichain-network-controller": {
-      "globals": {
-        "URL": true
-      },
-      "packages": {
-        "@metamask/base-controller": true,
-        "@metamask/keyring-api": true,
-        "@metamask/transaction-pay-controller>@metamask/network-controller": true,
-        "@metamask/superstruct": true,
-        "@metamask/utils": true,
-        "lodash": true
-      }
-    },
     "@metamask/multichain-transactions-controller": {
       "globals": {
         "console.error": true
@@ -1740,6 +1730,7 @@
         "uuid": true
       }
     },
+<<<<<<< HEAD
     "@metamask/transaction-pay-controller>@metamask/bridge-controller>@metamask/transaction-controller>@metamask/network-controller": {
       "globals": {
         "Intl.NumberFormat": true,
@@ -1794,6 +1785,8 @@
         "uuid": true
       }
     },
+=======
+>>>>>>> main
     "@metamask/network-enablement-controller": {
       "packages": {
         "@metamask/base-controller": true,
@@ -1910,18 +1903,6 @@
       }
     },
     "@metamask/bridge-controller>@metamask/polling-controller": {
-      "globals": {
-        "clearTimeout": true,
-        "console.error": true,
-        "setTimeout": true
-      },
-      "packages": {
-        "@metamask/base-controller": true,
-        "@metamask/snaps-utils>fast-json-stable-stringify": true,
-        "uuid": true
-      }
-    },
-    "@metamask/transaction-pay-controller>@metamask/bridge-controller>@metamask/polling-controller": {
       "globals": {
         "clearTimeout": true,
         "console.error": true,
@@ -2595,7 +2576,7 @@
       "packages": {
         "@ethersproject/abi": true,
         "@metamask/base-controller": true,
-        "@metamask/transaction-pay-controller>@metamask/bridge-controller": true,
+        "@metamask/bridge-controller": true,
         "@metamask/controller-utils": true,
         "@metamask/metamask-eth-abis": true,
         "@metamask/transaction-controller": true,
@@ -2809,7 +2790,7 @@
         "console": true,
         "crypto": false,
         "define": false,
-        "devicePixelRatio": false,
+        "devicePixelRatio": true,
         "document": false,
         "document.createElement": true,
         "fetch": false,
@@ -2828,17 +2809,17 @@
     },
     "@rive-app/react-canvas": {
       "globals": {
-        "IntersectionObserver": false,
-        "ResizeObserver": false,
+        "IntersectionObserver": true,
+        "ResizeObserver": true,
         "addEventListener": true,
         "clearTimeout": true,
         "console.error": true,
-        "devicePixelRatio": false,
+        "devicePixelRatio": true,
         "document.documentElement.clientHeight": true,
         "document.documentElement.clientWidth": true,
-        "innerHeight": false,
-        "innerWidth": false,
-        "matchMedia": false,
+        "innerHeight": true,
+        "innerWidth": true,
+        "matchMedia": true,
         "removeEventListener": true,
         "setTimeout": true
       },
