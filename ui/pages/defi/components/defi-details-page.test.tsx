@@ -1,5 +1,4 @@
 import React from 'react';
-import { Route, Routes } from 'react-router-dom';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { CHAIN_IDS } from '../../../../shared/constants/network';
@@ -7,11 +6,12 @@ import { renderWithProvider } from '../../../../test/lib/render-helpers-navigate
 import mockState from '../../../../test/data/mock-state.json';
 import DeFiPage from './defi-details-page';
 
+const mockNavigate = jest.fn();
+
 describe('DeFiDetailsPage', () => {
   const mockStore = {
     ...mockState,
     metamask: {
-      ...mockState.metamask,
       allDeFiPositions: {
         [mockState.metamask.selectedAddress]: {
           '0x1': {
@@ -64,6 +64,7 @@ describe('DeFiDetailsPage', () => {
           },
         },
       },
+      ...mockState.metamask,
     },
   };
 
@@ -80,11 +81,11 @@ describe('DeFiDetailsPage', () => {
 
   it('renders defi asset page', () => {
     const { container } = renderWithProvider(
-      <Routes>
-        <Route path="/defi/:chainId/:protocolId" element={<DeFiPage />} />
-      </Routes>,
+      <DeFiPage
+        navigate={mockNavigate}
+        params={{ chainId: CHAIN_IDS.MAINNET, protocolId: 'aave' }}
+      />,
       store,
-      `/defi/${CHAIN_IDS.MAINNET}/aave`,
     );
 
     expect(container).toMatchSnapshot();

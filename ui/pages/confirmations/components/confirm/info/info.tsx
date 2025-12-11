@@ -1,7 +1,7 @@
 import { TransactionType } from '@metamask/transaction-controller';
 import { ApprovalType } from '@metamask/controller-utils';
 import React, { useMemo } from 'react';
-import { getEnabledAdvancedPermissions } from '../../../../../../shared/modules/environment';
+import { isGatorPermissionsFeatureEnabled } from '../../../../../../shared/modules/environment';
 import { useTrustSignalMetrics } from '../../../../trust-signals/hooks/useTrustSignalMetrics';
 import { useConfirmContext } from '../../../context/confirm';
 import { useSmartTransactionFeatureFlags } from '../../../hooks/useSmartTransactionFeatureFlags';
@@ -47,7 +47,7 @@ const Info = () => {
           return TypedSignV1Info;
         }
         if (signatureRequest?.decodedPermission) {
-          if (getEnabledAdvancedPermissions().length === 0) {
+          if (!isGatorPermissionsFeatureEnabled()) {
             throw new Error('Gator permissions feature is not enabled');
           }
 

@@ -2,15 +2,15 @@ import { GasFeeToken } from '@metamask/transaction-controller';
 import { renderHookWithConfirmContextProvider } from '../../../../../test/lib/confirmations/render-helpers';
 import { genUnapprovedContractInteractionConfirmation } from '../../../../../test/data/confirmations/contract-interaction';
 import { getMockConfirmStateForTransaction } from '../../../../../test/data/confirmations/helper';
-import { useHasInsufficientBalance } from '../useHasInsufficientBalance';
+import { useIsInsufficientBalance } from '../useIsInsufficientBalance';
 import { useIsGaslessLoading } from './useIsGaslessLoading';
 import { useIsGaslessSupported } from './useIsGaslessSupported';
 
 jest.mock('./useIsGaslessSupported');
-jest.mock('../useHasInsufficientBalance');
+jest.mock('../useIsInsufficientBalance');
 
 const mockedUseIsGaslessSupported = jest.mocked(useIsGaslessSupported);
-const mockedUseHasInsufficientBalance = jest.mocked(useHasInsufficientBalance);
+const mockedUseIsInsufficientBalance = jest.mocked(useIsInsufficientBalance);
 
 async function runHook({
   simulationEnabled,
@@ -26,12 +26,8 @@ async function runHook({
   mockedUseIsGaslessSupported.mockReturnValue({
     isSupported: gaslessSupported,
     isSmartTransaction: true,
-    pending: false,
   });
-  mockedUseHasInsufficientBalance.mockReturnValue({
-    hasInsufficientBalance: insufficientBalance,
-    nativeCurrency: 'USD',
-  });
+  mockedUseIsInsufficientBalance.mockReturnValue(insufficientBalance);
 
   const { result } = renderHookWithConfirmContextProvider(
     useIsGaslessLoading,

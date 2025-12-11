@@ -215,7 +215,7 @@ import { FirstTimeFlowType } from '../../shared/constants/onboarding';
 import { updateCurrentLocale } from '../../shared/lib/translate';
 import {
   getIsSeedlessOnboardingFeatureEnabled,
-  getEnabledAdvancedPermissions,
+  isGatorPermissionsFeatureEnabled,
 } from '../../shared/modules/environment';
 import { isSnapPreinstalled } from '../../shared/lib/snaps/snaps';
 import { toChecksumHexAddress } from '../../shared/modules/hexstring-utils';
@@ -1147,31 +1147,12 @@ export default class MetamaskController extends EventEmitter {
           (meta) =>
             meta.hash === hash && meta.status === TransactionStatus.submitted,
         ),
-      processRequestExecutionPermissions: async (params, req) => {
-        const enabledTypes = getEnabledAdvancedPermissions();
-
-        if (!params || params.length === 0) {
-          throw rpcErrors.methodNotSupported('No permission type provided');
-        }
-
-        for (const param of params) {
-          const permissionType = param?.permission?.type;
-          if (!enabledTypes.includes(permissionType)) {
-            throw rpcErrors.methodNotSupported(
-              `Permission type '${permissionType ?? 'unknown'}' is not enabled`,
-            );
-          }
-        }
-
-        return forwardRequestToSnap(
-          {
+      processRequestExecutionPermissions: isGatorPermissionsFeatureEnabled()
+        ? forwardRequestToSnap.bind(null, {
             snapId: process.env.PERMISSIONS_KERNEL_SNAP_ID,
             handleRequest: this.handleSnapRequest.bind(this),
-          },
-          params,
-          req,
-        );
-      },
+          })
+        : undefined,
     });
 
     // ensure isClientOpenAndUnlocked is updated when memState updates

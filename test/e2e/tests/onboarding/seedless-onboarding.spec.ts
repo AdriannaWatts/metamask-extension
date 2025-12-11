@@ -1,3 +1,4 @@
+import { strict as assert } from 'assert';
 import { Mockttp } from 'mockttp';
 import FixtureBuilder from '../../fixtures/fixture-builder';
 import { withFixtures } from '../../helpers';
@@ -9,9 +10,6 @@ import {
   handleSidepanelPostOnboarding,
 } from '../../page-objects/flows/onboarding.flow';
 import OnboardingCompletePage from '../../page-objects/pages/onboarding/onboarding-complete-page';
-import AddressListModal from '../../page-objects/pages/multichain/address-list-modal';
-import HeaderNavbar from '../../page-objects/pages/header-navbar';
-import AccountListPage from '../../page-objects/pages/account-list-page';
 import HomePage from '../../page-objects/pages/home/homepage';
 import {
   MOCK_GOOGLE_ACCOUNT,
@@ -56,10 +54,7 @@ describe('Metamask onboarding (with social login)', function () {
   it('Imports an existing wallet with Google login and completes the onboarding process', async function () {
     await withFixtures(
       {
-        fixtures: new FixtureBuilder({ onboarding: true })
-          .withPreferencesControllerShowNativeTokenAsMainBalanceEnabled()
-          .withEnabledNetworks({ eip155: { '0x1': true } })
-          .build(),
+        fixtures: new FixtureBuilder({ onboarding: true }).build(),
         title: this.test?.fullTitle(),
         testSpecificMock: (server: Mockttp) => {
           // using this to mock the OAuth Service (Web Authentication flow + Auth server)
@@ -73,19 +68,13 @@ describe('Metamask onboarding (with social login)', function () {
         await importWalletWithSocialLoginOnboardingFlow({
           driver,
         });
+
         const homePage = new HomePage(driver);
         await homePage.checkPageIsLoaded();
-        await homePage.checkExpectedBalanceIsDisplayed('25', 'ETH');
-        const headerNavbar = new HeaderNavbar(driver);
-        await headerNavbar.openAccountMenu();
-        const accountListPage = new AccountListPage(driver);
+        const displayedWalletAddress = await homePage.getAccountAddress();
 
-        await accountListPage.openMultichainAccountMenu({
-          accountLabel: 'Account 1',
-        });
-        await accountListPage.clickMultichainAccountMenuItem('Addresses');
-        const addressListModal = new AddressListModal(driver);
-        await addressListModal.checkNetworkAddressIsDisplayed(
+        assert.deepStrictEqual(
+          displayedWalletAddress,
           shortenAddress(
             normalizeSafeAddress(MOCK_GOOGLE_ACCOUNT_WALLET_ADDRESS),
           ),
