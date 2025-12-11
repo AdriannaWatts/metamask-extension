@@ -1,5 +1,5 @@
 import React, { useContext, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom-v5-compat';
 import { useDispatch, useSelector } from 'react-redux';
 import browser from 'webextension-polyfill';
 import {

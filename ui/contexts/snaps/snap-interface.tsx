@@ -104,8 +104,9 @@ export const SnapInterfaceContextProvider: FunctionComponent<
         params: {
           event: {
             type: event,
-            ...(name === undefined ? {} : { name }),
-            ...(value === undefined ? {} : { value }),
+            // TODO: Allow null in the types and simplify this
+            ...(name !== undefined && name !== null ? { name } : {}),
+            ...(value !== undefined && value !== null ? { value } : {}),
           },
           id: interfaceId,
         },
@@ -134,7 +135,7 @@ export const SnapInterfaceContextProvider: FunctionComponent<
   const handleEvent: HandleEvent = ({
     event,
     name,
-    value = name ? internalState.current[name] : null,
+    value = name ? internalState.current[name] : undefined,
   }) => handleSnapRequest(event, name, value);
 
   const submitInputChange = (name: string, value: State | null) =>

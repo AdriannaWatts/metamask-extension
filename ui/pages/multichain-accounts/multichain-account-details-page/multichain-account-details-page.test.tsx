@@ -1,10 +1,11 @@
 import React from 'react';
+import { Route } from 'react-router-dom';
 import { screen, fireEvent } from '@testing-library/react';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import configureStore from '../../../store/store';
 import mockState from '../../../../test/data/mock-state.json';
-import { renderWithProvider } from '../../../../test/lib/render-helpers-navigate';
+import { renderWithProvider } from '../../../../test/lib/render-helpers';
 import {
   MULTICHAIN_WALLET_DETAILS_PAGE_ROUTE,
   PREVIOUS_ROUTE,
@@ -29,9 +30,9 @@ jest.mock('../../../../shared/lib/trace', () => ({
 const mockUseNavigate = jest.fn();
 const mockUseParams = jest.fn();
 const mockUseLocation = jest.fn();
-jest.mock('react-router-dom', () => {
+jest.mock('react-router-dom-v5-compat', () => {
   return {
-    ...jest.requireActual('react-router-dom'),
+    ...jest.requireActual('react-router-dom-v5-compat'),
     useNavigate: () => mockUseNavigate,
     useParams: () => mockUseParams(),
     useLocation: () => mockUseLocation(),
@@ -230,7 +231,9 @@ describe('MultichainAccountDetailsPage', () => {
       const store = configureStore(mockState);
       const groupId = mockState.metamask.accountTree.selectedAccountGroup;
       renderWithProvider(
-        <MultichainAccountDetailsPage />,
+        <Route path="/test/:id">
+          <MultichainAccountDetailsPage />
+        </Route>,
         store,
         `/test/${encodeURIComponent(groupId)}`,
       );

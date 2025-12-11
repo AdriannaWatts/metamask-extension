@@ -1,6 +1,5 @@
 import React from 'react';
-import { fireEvent } from '../../../../test/jest';
-import { renderWithProvider } from '../../../../test/lib/render-helpers-navigate';
+import { fireEvent, renderWithProvider } from '../../../../test/jest';
 import configureStore from '../../../store/store';
 import mockState from '../../../../test/data/mock-state.json';
 import { DiscoverMenuItem } from './discover-menu-item';

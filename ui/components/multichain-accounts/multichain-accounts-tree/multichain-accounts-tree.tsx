@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { InternalAccount } from '@metamask/keyring-internal-api';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom-v5-compat';
 import { Box, ButtonLink, ButtonLinkSize, Text } from '../../component-library';
 import {
   AlignItems,

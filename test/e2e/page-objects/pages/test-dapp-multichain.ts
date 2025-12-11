@@ -81,7 +81,6 @@ class TestDappMultichain {
   }
 
   async clickFirstResultSummary() {
-    await this.driver.waitForSelector(this.resultSummary);
     const resultSummaries = await this.driver.findElements(this.resultSummary);
     const firstResultSummary = resultSummaries[0];
     await firstResultSummary.click();
@@ -205,32 +204,10 @@ class TestDappMultichain {
     await this.clickWalletGetSessionButton();
     await this.clickFirstResultSummary();
 
-    const getSessionRawResult = await this.driver.waitForSelector(
+    const getSessionRawResult = await this.driver.findElement(
       this.firstSessionMethodResult,
     );
-
-    // Wait for the element text to be valid JSON
-    let parsedResult:
-      | { sessionScopes: Record<string, NormalizedScopeObject> }
-      | undefined;
-    await this.driver.wait(async () => {
-      try {
-        const text = await getSessionRawResult.getText();
-        if (!text || text.trim().length === 0) {
-          return false;
-        }
-        parsedResult = JSON.parse(text);
-        return true;
-      } catch {
-        return false;
-      }
-    });
-    if (!parsedResult) {
-      throw new Error(
-        'Failed to parse session result: JSON parsing did not complete',
-      );
-    }
-    return parsedResult;
+    return JSON.parse(await getSessionRawResult.getText());
   }
 
   /**
