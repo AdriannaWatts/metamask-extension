@@ -296,6 +296,7 @@ export const toBridgeToken = (
   const caipChainId = formatChainIdToCaip(payload.chainId);
   return {
     ...payload,
+    name: payload.name ?? payload.symbol,
     balance: payload.balance ?? '0',
     chainId: payload.chainId,
     image: getTokenImage(payload),
