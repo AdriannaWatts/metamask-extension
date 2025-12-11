@@ -8,14 +8,15 @@ import { getMockConfirmStateForTransaction } from '../../../../test/data/confirm
 import { renderHookWithConfirmContextProvider } from '../../../../test/lib/confirmations/render-helpers';
 import { flushPromises } from '../../../../test/lib/timer-helpers';
 import { updateSelectedGasFeeToken } from '../../../store/controller-actions/transaction-controller';
+import { Alert } from '../../../ducks/confirm-alerts/confirm-alerts';
 import { forceUpdateMetamaskState } from '../../../store/actions';
 import { GAS_FEE_TOKEN_MOCK } from '../../../../test/data/confirmations/gas';
+import { useInsufficientBalanceAlerts } from './alerts/transactions/useInsufficientBalanceAlerts';
 import { useAutomaticGasFeeTokenSelect } from './useAutomaticGasFeeTokenSelect';
 import { useIsGaslessSupported } from './gas/useIsGaslessSupported';
-import { useHasInsufficientBalance } from './useHasInsufficientBalance';
 
 jest.mock('../../../store/controller-actions/transaction-controller');
-jest.mock('./useHasInsufficientBalance');
+jest.mock('./alerts/transactions/useInsufficientBalanceAlerts');
 jest.mock('../../../../shared/modules/selectors');
 jest.mock('./gas/useIsGaslessSupported');
 
@@ -57,21 +58,19 @@ describe('useAutomaticGasFeeTokenSelect', () => {
   const forceUpdateMetamaskStateMock = jest.mocked(forceUpdateMetamaskState);
   const useIsGaslessSupportedMock = jest.mocked(useIsGaslessSupported);
 
-  const useHasInsufficientBalanceMock = jest.mocked(useHasInsufficientBalance);
+  const useInsufficientBalanceAlertsMock = jest.mocked(
+    useInsufficientBalanceAlerts,
+  );
 
   beforeEach(() => {
     jest.resetAllMocks();
-    useHasInsufficientBalanceMock.mockReturnValue({
-      hasInsufficientBalance: true,
-      nativeCurrency: 'ETH',
-    });
+    useInsufficientBalanceAlertsMock.mockReturnValue([{} as Alert]);
     updateSelectedGasFeeTokenMock.mockResolvedValue();
     forceUpdateMetamaskStateMock.mockResolvedValue();
 
     useIsGaslessSupportedMock.mockReturnValue({
       isSupported: true,
       isSmartTransaction: true,
-      pending: false,
     });
   });
 
@@ -149,7 +148,6 @@ describe('useAutomaticGasFeeTokenSelect', () => {
     useIsGaslessSupportedMock.mockReturnValue({
       isSupported: false,
       isSmartTransaction: false,
-      pending: false,
     });
 
     runHook();
@@ -161,10 +159,7 @@ describe('useAutomaticGasFeeTokenSelect', () => {
   });
 
   it('does not select first gas fee token if sufficient balance', async () => {
-    useHasInsufficientBalanceMock.mockReturnValue({
-      hasInsufficientBalance: false,
-      nativeCurrency: 'ETH',
-    });
+    useInsufficientBalanceAlertsMock.mockReturnValue([]);
 
     runHook();
 
@@ -175,11 +170,8 @@ describe('useAutomaticGasFeeTokenSelect', () => {
   });
 
   it('selects first gas fee token when insufficient balance appears after first render', async () => {
-    let balanceInfo = {
-      hasInsufficientBalance: false,
-      nativeCurrency: 'ETH',
-    };
-    useHasInsufficientBalanceMock.mockImplementation(() => balanceInfo);
+    let alerts: Alert[] = [];
+    useInsufficientBalanceAlertsMock.mockImplementation(() => alerts);
 
     const { rerender, store } = runHook({
       selectedGasFeeToken: undefined,
@@ -194,10 +186,7 @@ describe('useAutomaticGasFeeTokenSelect', () => {
     expect(updateSelectedGasFeeTokenMock).toHaveBeenCalledTimes(0);
     expect(forceUpdateMetamaskStateMock).toHaveBeenCalledTimes(0);
 
-    balanceInfo = {
-      hasInsufficientBalance: true,
-      nativeCurrency: 'ETH',
-    };
+    alerts = [{} as Alert];
 
     rerender();
 
@@ -267,7 +256,6 @@ describe('useAutomaticGasFeeTokenSelect', () => {
     useIsGaslessSupportedMock.mockReturnValue({
       isSupported: true,
       isSmartTransaction: false,
-      pending: false,
     });
 
     runHook({
@@ -289,7 +277,6 @@ describe('useAutomaticGasFeeTokenSelect', () => {
     useIsGaslessSupportedMock.mockReturnValue({
       isSupported: true,
       isSmartTransaction: false,
-      pending: false,
     });
 
     const { store } = runHook({

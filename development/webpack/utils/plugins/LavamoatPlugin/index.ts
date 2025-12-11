@@ -130,7 +130,6 @@ export const lavamoatPlugin = (args: Args) =>
         'sentryHooks',
         'sentry',
         'logEncryptedVault',
-        'history', // needed by Sentry and react-router-dom v6 HashRouter
         // globals used by react-dom
         'getSelection',
         // globals opera needs to function

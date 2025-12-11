@@ -1,6 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
-import { Routes, Route, useNavigate, useParams } from 'react-router-dom';
+import {
+  Routes,
+  Route,
+  useNavigate,
+  useParams,
+  useLocation,
+} from 'react-router-dom-v5-compat';
 import {
   ENVIRONMENT_TYPE_NOTIFICATION,
   ORIGIN_METAMASK,
@@ -15,11 +22,11 @@ import { getMostRecentOverviewPage } from '../../../ducks/history/history';
 import { getSendTo } from '../../../ducks/send';
 import { getSelectedNetworkClientId } from '../../../../shared/modules/selectors/networks';
 import {
+  CONFIRM_TRANSACTION_ROUTE,
   DECRYPT_MESSAGE_REQUEST_PATH,
   DEFAULT_ROUTE,
   ENCRYPTION_PUBLIC_KEY_REQUEST_PATH,
 } from '../../../helpers/constants/routes';
-import { toRelativeRoutePath } from '../../routes/utils';
 import { isTokenMethodAction } from '../../../helpers/utils/transactions.util';
 import usePolling from '../../../hooks/usePolling';
 import { usePrevious } from '../../../hooks/usePrevious';
@@ -47,12 +54,20 @@ import { useAsyncResult } from '../../../hooks/useAsync';
 import { TraceName } from '../../../../shared/lib/trace';
 import ConfirmTokenTransactionSwitch from './confirm-token-transaction-switch';
 
-const ConfirmTransaction = () => {
+const ConfirmTransaction = ({
+  params: routeParams,
+  location: routeLocation,
+} = {}) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const urlParams = useParams();
+  const hookLocation = useLocation();
 
-  const { id: paramsTransactionId } = urlParams;
+  // Use params from props (v5 route) if available, otherwise fall back to useParams (v6)
+  const { id: paramsTransactionId } = routeParams || urlParams;
+
+  // Use location from props (v5 route) if available, otherwise fall back to useLocation (v6)
+  const location = routeLocation || hookLocation;
 
   const mostRecentOverviewPage = useSelector(getMostRecentOverviewPage);
   const sendTo = useSelector(getSendTo);
@@ -201,13 +216,13 @@ const ConfirmTransaction = () => {
   // support URLs of /confirm-transaction or /confirm-transaction/<transactionId>
   if (isValidTransactionId) {
     return (
-      <Routes>
+      <Routes location={location}>
         <Route
-          path={toRelativeRoutePath(DECRYPT_MESSAGE_REQUEST_PATH)}
+          path={`${CONFIRM_TRANSACTION_ROUTE}/:id?${DECRYPT_MESSAGE_REQUEST_PATH}`}
           element={<ConfirmDecryptMessage />}
         />
         <Route
-          path={toRelativeRoutePath(ENCRYPTION_PUBLIC_KEY_REQUEST_PATH)}
+          path={`${CONFIRM_TRANSACTION_ROUTE}/:id?${ENCRYPTION_PUBLIC_KEY_REQUEST_PATH}`}
           element={<ConfirmEncryptionPublicKey />}
         />
         <Route path="*" element={<ConfirmTransactionSwitch />} />
@@ -216,6 +231,19 @@ const ConfirmTransaction = () => {
   }
 
   return <Loading />;
+};
+
+ConfirmTransaction.propTypes = {
+  params: PropTypes.shape({
+    id: PropTypes.string,
+  }),
+  location: PropTypes.shape({
+    pathname: PropTypes.string,
+    search: PropTypes.string,
+    hash: PropTypes.string,
+    state: PropTypes.object,
+    key: PropTypes.string,
+  }),
 };
 
 export default ConfirmTransaction;

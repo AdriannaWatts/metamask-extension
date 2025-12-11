@@ -3,8 +3,9 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { TransactionStatus } from '@metamask/transaction-controller';
 import { act, waitFor } from '@testing-library/react';
+import { createMemoryHistory } from 'history';
 import { GAS_LIMITS } from '../../../../shared/constants/gas';
-import { renderWithProvider } from '../../../../test/lib/render-helpers-navigate';
+import { renderWithProviderAndHistory } from '../../../../test/jest/rendering';
 import mockState from '../../../../test/data/mock-state.json';
 import mockSwapTxGroup from '../../../../test/data/swap/mock-legacy-swap-transaction-group.json';
 import TransactionListItemDetails from '.';
@@ -36,21 +37,23 @@ const render = async (overrideProps) => {
     recipientAddress: '0x0000000000000000000000000000000000000000',
     senderAddress: '0x0dcd5d886577d5081b0c52e242ef29e70be3e7bc',
     tryReverseResolveAddress: jest.fn(),
-    transactionStatus: () => <div />,
+    transactionStatus: () => <div></div>,
     blockExplorerLinkText,
     rpcPrefs,
     ...overrideProps,
   };
 
   const mockStore = configureMockStore([thunk])(mockState);
+  const history = createMemoryHistory();
 
   let result;
 
   await act(
     async () =>
-      (result = renderWithProvider(
+      (result = renderWithProviderAndHistory(
         <TransactionListItemDetails {...props} />,
         mockStore,
+        history,
       )),
   );
 

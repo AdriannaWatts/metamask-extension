@@ -14,13 +14,6 @@ import { Modal } from '../../components/app/modals';
 import configureStore from '../../store/store';
 import RevealSeedPage from './reveal-seed';
 
-const mockUseParams = jest.fn().mockReturnValue({});
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useParams: () => mockUseParams(),
-}));
-
 const mockSuccessfulSrpReveal = () => {
   return (dispatch) => {
     dispatch({ type: 'MOCK_REQUEST_REVEAL_SEED_WORDS' });
@@ -36,6 +29,7 @@ const mockRequestRevealSeedWords = jest
   .fn()
   .mockImplementation(mockSuccessfulSrpReveal);
 const mockShowModal = jest.fn();
+const mockNavigate = jest.fn();
 const password = 'password';
 
 jest.mock('../../store/actions.ts', () => ({
@@ -65,7 +59,6 @@ describe('Reveal Seed Page', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockUseParams.mockReturnValue({});
   });
 
   afterEach(() => {
@@ -73,14 +66,17 @@ describe('Reveal Seed Page', () => {
   });
 
   it('should match snapshot', () => {
-    const { container } = renderWithProvider(<RevealSeedPage />, mockStore);
+    const { container } = renderWithProvider(
+      <RevealSeedPage navigate={mockNavigate} />,
+      mockStore,
+    );
 
     expect(container).toMatchSnapshot();
   });
 
   it('form submit', async () => {
     const { queryByTestId, queryByText } = renderWithProvider(
-      <RevealSeedPage />,
+      <RevealSeedPage navigate={mockNavigate} />,
       mockStore,
     );
 
@@ -97,7 +93,7 @@ describe('Reveal Seed Page', () => {
 
   it('shows hold to reveal', async () => {
     const { queryByTestId, queryByText } = renderWithProvider(
-      <RevealSeedPage />,
+      <RevealSeedPage navigate={mockNavigate} />,
       mockStore,
     );
 
@@ -116,7 +112,7 @@ describe('Reveal Seed Page', () => {
     mockRequestRevealSeedWords.mockImplementation(mockUnsuccessfulSrpReveal);
 
     const { queryByTestId, queryByText } = renderWithProvider(
-      <RevealSeedPage />,
+      <RevealSeedPage navigate={mockNavigate} />,
       mockStore,
     );
 
@@ -138,7 +134,7 @@ describe('Reveal Seed Page', () => {
     const { queryByTestId, queryByText } = renderWithProvider(
       <div>
         <Modal />
-        <RevealSeedPage />
+        <RevealSeedPage navigate={mockNavigate} />
       </div>,
       store,
     );
@@ -168,7 +164,7 @@ describe('Reveal Seed Page', () => {
       renderWithProvider(
         <MetaMetricsContext.Provider value={mockTrackEvent}>
           <Modal />
-          <RevealSeedPage />
+          <RevealSeedPage navigate={mockNavigate} />
         </MetaMetricsContext.Provider>,
         store,
       );
@@ -344,7 +340,7 @@ describe('Reveal Seed Page', () => {
     const mockTrackEvent = jest.fn();
     const { queryByText } = renderWithProvider(
       <MetaMetricsContext.Provider value={mockTrackEvent}>
-        <RevealSeedPage />
+        <RevealSeedPage navigate={mockNavigate} />
       </MetaMetricsContext.Provider>,
       mockStore,
     );
@@ -375,10 +371,8 @@ describe('Reveal Seed Page', () => {
   describe('multi-srp', () => {
     it('passes the keyringId to the requestRevealSeedWords action', async () => {
       const keyringId = 'ULID01234567890ABCDEFGHIJKLMN';
-      mockUseParams.mockReturnValue({ keyringId });
-
       const { queryByTestId, queryByText } = renderWithProvider(
-        <RevealSeedPage />,
+        <RevealSeedPage navigate={mockNavigate} keyringId={keyringId} />,
         mockStore,
       );
 
@@ -397,10 +391,9 @@ describe('Reveal Seed Page', () => {
     });
 
     it('passes undefined for keyringId if there is no param', async () => {
-      mockUseParams.mockReturnValue({});
-
+      const keyringId = undefined;
       const { queryByTestId, queryByText } = renderWithProvider(
-        <RevealSeedPage />,
+        <RevealSeedPage navigate={mockNavigate} keyringId={keyringId} />,
         mockStore,
       );
 
@@ -413,7 +406,7 @@ describe('Reveal Seed Page', () => {
       await waitFor(() => {
         expect(mockRequestRevealSeedWords).toHaveBeenCalledWith(
           password,
-          undefined,
+          keyringId,
         );
       });
     });

@@ -6,7 +6,7 @@ import React, {
   useMemo,
 } from 'react';
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom-v5-compat';
 
 import { captureException } from '../../../../../../shared/lib/sentry';
 

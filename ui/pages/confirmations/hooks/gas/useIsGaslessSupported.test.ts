@@ -62,7 +62,6 @@ describe('useIsGaslessSupported', () => {
     expect(result).toStrictEqual({
       isSupported: true,
       isSmartTransaction: true,
-      pending: false,
     });
   });
 
@@ -75,7 +74,6 @@ describe('useIsGaslessSupported', () => {
       expect(result).toStrictEqual({
         isSupported: true,
         isSmartTransaction: false,
-        pending: false,
       });
     });
 
@@ -87,7 +85,6 @@ describe('useIsGaslessSupported', () => {
       expect(result).toStrictEqual({
         isSupported: false,
         isSmartTransaction: false,
-        pending: false,
       });
     });
 
@@ -99,7 +96,6 @@ describe('useIsGaslessSupported', () => {
       expect(result).toStrictEqual({
         isSupported: false,
         isSmartTransaction: false,
-        pending: false,
       });
     });
 
@@ -111,7 +107,6 @@ describe('useIsGaslessSupported', () => {
       expect(result).toStrictEqual({
         isSupported: false,
         isSmartTransaction: false,
-        pending: false,
       });
     });
   });
@@ -126,7 +121,6 @@ describe('useIsGaslessSupported', () => {
     expect(result).toStrictEqual({
       isSupported: false,
       isSmartTransaction: true,
-      pending: false,
     });
   });
 
@@ -148,7 +142,6 @@ describe('useIsGaslessSupported', () => {
     expect(result).toStrictEqual({
       isSupported: false,
       isSmartTransaction: true,
-      pending: true,
     });
   });
 });

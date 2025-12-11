@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom-v5-compat';
 import { parseMetaMaskUrl } from '@metamask/snaps-utils';
 import { getSnapRoute } from '../../helpers/utils/util';
 
