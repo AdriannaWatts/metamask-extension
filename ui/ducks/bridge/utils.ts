@@ -289,10 +289,7 @@ const getTokenImage = (payload: TokenPayload['payload']) => {
 
 export const toBridgeToken = (
   payload: TokenPayload['payload'],
-): BridgeToken | null => {
-  if (!payload) {
-    return null;
-  }
+): BridgeToken => {
   const caipChainId = formatChainIdToCaip(payload.chainId);
   return {
     ...payload,
