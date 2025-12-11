@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { useSelector } from 'react-redux';
-import type { Location as RouterLocation } from 'react-router-dom';
+import type { Location as RouterLocation } from 'react-router-dom-v5-compat';
 import {
   TransactionStatus,
   TransactionType,

@@ -1,10 +1,9 @@
 import { generateWalletState } from '../../../../app/scripts/fixtures/generate-wallet-state';
 import { WITH_STATE_POWER_USER } from '../../benchmarks/constants';
 import { withFixtures } from '../../helpers';
+import { loginWithoutBalanceValidation } from '../../page-objects/flows/login.flow';
 import AccountListPage from '../../page-objects/pages/account-list-page';
 import HeaderNavbar from '../../page-objects/pages/header-navbar';
-import HomePage from '../../page-objects/pages/home/homepage';
-import LoginPage from '../../page-objects/pages/login-page';
 import { Driver } from '../../webdriver/driver';
 
 describe('Power user persona', function () {
@@ -31,12 +30,7 @@ describe('Power user persona', function () {
         disableServerMochaToBackground: true,
       },
       async ({ driver }: { driver: Driver }) => {
-        await driver.navigate();
-        const loginPage = new LoginPage(driver);
-        await loginPage.checkPageIsLoaded(30000);
-        await loginPage.loginToHomepage();
-        const homePage = new HomePage(driver);
-        await homePage.checkPageIsLoaded({ timeout: 30000 }); // Since here the requests are not mocked, let's wait longer
+        await loginWithoutBalanceValidation(driver);
 
         // Confirm the number of accounts in the account list
         new HeaderNavbar(driver).openAccountMenu();
