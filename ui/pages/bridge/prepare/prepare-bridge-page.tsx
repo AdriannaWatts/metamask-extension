@@ -215,6 +215,14 @@ const PrepareBridgePage = ({
   const { openBuyCryptoInPdapp } = useRamps();
 
   const { tokenAlert } = useTokenAlerts();
+  const securityWarnings = useMemo(
+    () =>
+      [tokenAlert?.description, txAlert?.description].filter(
+        (x) => x !== null && x !== undefined,
+      ),
+    [tokenAlert?.description, txAlert?.description],
+  );
+
   const {
     selectedDestinationAccount,
     setSelectedDestinationAccount,
@@ -380,9 +388,7 @@ const PrepareBridgePage = ({
       token_symbol_destination: toToken?.symbol ?? '',
       // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      security_warnings: [txAlert?.descriptionId, tokenAlert?.titleId].filter(
-        Boolean,
-      ) as string[],
+      security_warnings: securityWarnings,
       // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
       // eslint-disable-next-line @typescript-eslint/naming-convention
       usd_amount_source: fromAmountInCurrency.usd.toNumber(),
@@ -751,7 +757,7 @@ const PrepareBridgePage = ({
                     token_symbol_destination: toToken?.symbol ?? '',
                     // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
                     // eslint-disable-next-line @typescript-eslint/naming-convention
-                    security_warnings: [], // TODO populate security warnings
+                    security_warnings: securityWarnings,
                     // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
                     // eslint-disable-next-line @typescript-eslint/naming-convention
                     usd_amount_source: fromAmountInCurrency.usd.toNumber(),
