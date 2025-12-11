@@ -8,7 +8,7 @@ global.sentry = {
   captureException: sentryCaptureExceptionMock,
 };
 
-describe(`migration #${VERSION} - remove transaction history`, () => {
+describe(`migration #${VERSION} - reset transaction history fields`, () => {
   afterEach(() => jest.resetAllMocks());
 
   it('updates the version metadata', async () => {
@@ -42,7 +42,7 @@ describe(`migration #${VERSION} - remove transaction history`, () => {
     expect(newState.data).toStrictEqual(oldState.data);
   });
 
-  it('removes history and sendFlowHistory from transactions', async () => {
+  it('sets history and sendFlowHistory to empty arrays on each transaction', async () => {
     const oldState = {
       meta: { version: oldVersion },
       data: {
@@ -56,7 +56,7 @@ describe(`migration #${VERSION} - remove transaction history`, () => {
             },
             {
               id: 2,
-              chainId: '0x1', // no history
+              chainId: '0x1', // no history fields
             },
           ],
         },
@@ -64,15 +64,20 @@ describe(`migration #${VERSION} - remove transaction history`, () => {
     };
 
     const newState = await migrate(oldState);
+
     const expectedTransactions = {
       transactions: [
         {
           id: 1,
           chainId: '0x1',
+          history: [],
+          sendFlowHistory: [],
         },
         {
           id: 2,
           chainId: '0x1',
+          history: [],
+          sendFlowHistory: [],
         },
       ],
     };

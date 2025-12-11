@@ -75,7 +75,7 @@ function transformState(state: Record<string, unknown>) {
   }
 
   //
-  // -- Step 3: Remove fields from each tx
+  // -- Step 3: Clean fields from each tx
   //
   txController.transactions = txController.transactions.map((tx) => {
     if (!isObject(tx)) {
@@ -83,8 +83,9 @@ function transformState(state: Record<string, unknown>) {
     }
 
     const updated = { ...tx };
-    delete updated.history;
-    delete updated.sendFlowHistory;
+
+    updated.history = [];
+    updated.sendFlowHistory = [];
 
     return updated;
   });

@@ -8709,9 +8709,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/transaction-controller@npm:@metamask-previews/transaction-controller@62.5.0-preview-f557eade":
-  version: 62.5.0-preview-f557eade
-  resolution: "@metamask-previews/transaction-controller@npm:62.5.0-preview-f557eade"
+"@metamask/transaction-controller@npm:@metamask-previews/transaction-controller@62.6.0-preview-d717276a":
+  version: 62.6.0-preview-d717276a
+  resolution: "@metamask-previews/transaction-controller@npm:62.6.0-preview-d717276a"
   dependencies:
     "@ethereumjs/common": "npm:^4.4.0"
     "@ethereumjs/tx": "npm:^5.4.0"
@@ -8743,7 +8743,7 @@ __metadata:
   peerDependencies:
     "@babel/runtime": ^7.0.0
     "@metamask/eth-block-tracker": ">=9"
-  checksum: 10/44b3370ff79d1698957efe73b9669917371d1bb1d5b62a6ae66ecedf3570d0145f435780d364e7b6e6735cd338b41b32c8b59d77070a94f4b835975f8cd8cb52
+  checksum: 10/e3c567225d315d70537f9661370effa9006ed2a33864236bf0c80115eb06d0a1c2aceaa310bed7143ee5e6b3f505d6c4f7c6f5d20c29a34ac71db5757a4609dc
   languageName: node
   linkType: hard
 
