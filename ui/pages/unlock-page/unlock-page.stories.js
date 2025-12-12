@@ -12,6 +12,8 @@ export default {
     },
   },
   argTypes: {
+    navigate: { control: 'object' },
+    location: { control: 'object' },
     isUnlocked: { control: 'boolean' },
     onRestore: { action: 'onRestore' },
     onSubmit: { action: 'onSubmit' },

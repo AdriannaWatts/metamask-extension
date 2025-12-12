@@ -1,10 +1,10 @@
 import React from 'react';
-import type { Location as RouterLocation } from 'react-router-dom';
+import type { Location as RouterLocation } from 'react-router-dom-v5-compat';
 import { EthAccountType, EthScope } from '@metamask/keyring-api';
 import { TransactionStatus } from '@metamask/transaction-controller';
 import type { BridgeHistoryItem } from '@metamask/bridge-status-controller';
 import { StatusTypes } from '@metamask/bridge-controller';
-import { renderWithProvider } from '../../../../test/lib/render-helpers-navigate';
+import { renderWithProvider } from '../../../../test/lib/render-helpers';
 import mockBridgeTxData from '../../../../test/data/bridge/mock-bridge-transaction-details.json';
 import { createBridgeMockStore } from '../../../../test/data/bridge/mock-bridge-store';
 import { mockNetworkState } from '../../../../test/stub/networks';
@@ -12,17 +12,6 @@ import { CHAIN_IDS } from '../../../../shared/constants/network';
 import configureStore from '../../../store/store';
 import { TransactionGroup } from '../../../hooks/useTransactionDisplayData';
 import CrossChainSwapTxDetails from './transaction-details';
-
-const mockNavigate = jest.fn();
-const mockLocation = jest.fn();
-const mockParams = jest.fn();
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockNavigate,
-  useLocation: () => mockLocation(),
-  useParams: () => mockParams(),
-}));
 
 const getMockStore = (
   transactionGroup: TransactionGroup,
@@ -62,27 +51,37 @@ const getMockStore = (
 };
 
 describe('transaction-details', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-    mockLocation.mockReturnValue({
-      pathname: '/cross-chain/tx-details/test-id',
-      search: '',
-      hash: '',
-      state: {
-        transactionGroup: mockBridgeTxData.transactionGroup,
-        isEarliestNonce: true,
-      },
-      key: 'test-key',
-    } as RouterLocation);
-    mockParams.mockReturnValue({
-      srcTxMetaId: mockBridgeTxData.srcTxMetaId,
-    });
-  });
+  const mockNavigate = jest.fn<
+    void,
+    [
+      path: string | number,
+      options?: { replace?: boolean; state?: Record<string, unknown> },
+    ]
+  >();
+
+  const mockLocation: RouterLocation = {
+    pathname: '/cross-chain/tx-details/test-id',
+    search: '',
+    hash: '',
+    state: {
+      transactionGroup: mockBridgeTxData.transactionGroup,
+      isEarliestNonce: true,
+    },
+    key: 'test-key',
+  };
+
+  const mockParams: { srcTxMetaId: string } = {
+    srcTxMetaId: mockBridgeTxData.srcTxMetaId,
+  };
 
   describe('bridge snapshots', () => {
     it('should render completed bridge tx', () => {
       const { queryAllByTestId, getByText } = renderWithProvider(
-        <CrossChainSwapTxDetails />,
+        <CrossChainSwapTxDetails
+          location={mockLocation}
+          navigate={mockNavigate}
+          params={mockParams}
+        />,
         getMockStore(
           mockBridgeTxData.transactionGroup,
           mockBridgeTxData.srcTxMetaId,
@@ -110,7 +109,11 @@ describe('transaction-details', () => {
 
     it('should render pending bridge snapshot', () => {
       const { queryAllByTestId, getByText } = renderWithProvider(
-        <CrossChainSwapTxDetails />,
+        <CrossChainSwapTxDetails
+          location={mockLocation}
+          navigate={mockNavigate}
+          params={mockParams}
+        />,
         getMockStore(
           {
             ...mockBridgeTxData.transactionGroup,
@@ -149,7 +152,11 @@ describe('transaction-details', () => {
 
     it('should render confirmed bridge tx', () => {
       const { queryAllByTestId, getByText } = renderWithProvider(
-        <CrossChainSwapTxDetails />,
+        <CrossChainSwapTxDetails
+          location={mockLocation}
+          navigate={mockNavigate}
+          params={mockParams}
+        />,
         getMockStore(
           {
             ...mockBridgeTxData.transactionGroup,
@@ -188,7 +195,11 @@ describe('transaction-details', () => {
 
     it('should render bridge tx that failed on src', () => {
       const { queryAllByTestId, getByText } = renderWithProvider(
-        <CrossChainSwapTxDetails />,
+        <CrossChainSwapTxDetails
+          location={mockLocation}
+          navigate={mockNavigate}
+          params={mockParams}
+        />,
         getMockStore(
           {
             ...mockBridgeTxData.transactionGroup,
@@ -227,7 +238,11 @@ describe('transaction-details', () => {
 
     it('should render bridge tx that failed on dest', () => {
       const { queryAllByTestId, getByText } = renderWithProvider(
-        <CrossChainSwapTxDetails />,
+        <CrossChainSwapTxDetails
+          location={mockLocation}
+          navigate={mockNavigate}
+          params={mockParams}
+        />,
         getMockStore(
           {
             ...mockBridgeTxData.transactionGroup,

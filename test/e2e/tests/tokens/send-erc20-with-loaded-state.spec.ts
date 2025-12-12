@@ -14,6 +14,21 @@ describe('Send ERC20', function () {
       {
         fixtures: new FixtureBuilder()
           .withNetworkControllerOnMainnet()
+          .withTokensController({
+            allTokens: {
+              '0x1': {
+                '0x5cfe73b6021e818b776b421b1c4db2474086a7e1': [
+                  {
+                    address: '0x6b175474e89094c44da98b954eedeac495271d0f',
+                    symbol: 'DAI',
+                    decimals: 18,
+                    isERC721: false,
+                    aggregators: [],
+                  },
+                ],
+              },
+            },
+          })
           .withEnabledNetworks({
             eip155: {
               '0x1': true,
@@ -37,8 +52,7 @@ describe('Send ERC20', function () {
         const homePage = new HomePage(driver);
         const assetListPage = new AssetListPage(driver);
         await homePage.checkPageIsLoaded();
-        await assetListPage.importTokenBySearch('DAI');
-        await assetListPage.clickOnAsset('Dai Stablecoin');
+        await assetListPage.clickOnAsset('DAI');
 
         // Send DAI
         const tokenOverviewPage = new TokenOverviewPage(driver);

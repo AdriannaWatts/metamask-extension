@@ -6,6 +6,7 @@ import { useI18nContext } from '../../../hooks/useI18nContext';
 import { getSnapName, shortenAddress } from '../../../helpers/utils/util';
 
 import { AccountListItemMenu } from '../account-list-item-menu';
+import { ConnectedAccountsMenu } from '../connected-accounts-menu';
 import {
   Box,
   ButtonIcon,
@@ -77,6 +78,7 @@ const AccountListItem = ({
   selected,
   onClick,
   closeMenu,
+  accountsCount,
   connectedAvatar,
   isPinned = false,
   menuType = AccountListItemMenuTypes.None,
@@ -84,6 +86,7 @@ const AccountListItem = ({
   currentTabOrigin,
   isActive = false,
   startAccessory,
+  onActionClick,
   shouldScrollToWhenSelected = true,
   showConnectedStatus = true,
   privacyMode = false,
@@ -186,6 +189,7 @@ const AccountListItem = ({
   );
   const isConnected =
     currentTabOrigin && currentTabIsConnectedToSelectedAddress;
+  const isSingleAccount = accountsCount === 1;
 
   // Only show connected status badge if account is actually connected
   const shouldShowConnectedStatusBadge = showConnectedStatus && isConnected;
@@ -414,6 +418,17 @@ const AccountListItem = ({
             isConnected={isConnected}
           />
         )}
+        {menuType === AccountListItemMenuTypes.Connection && (
+          <ConnectedAccountsMenu
+            anchorElement={accountListItemMenuElement}
+            account={account}
+            onClose={() => setAccountOptionsMenuOpen(false)}
+            disableAccountSwitcher={isSingleAccount && selected}
+            isOpen={accountOptionsMenuOpen}
+            onActionClick={onActionClick}
+            activeTabOrigin={currentTabOrigin}
+          />
+        )}
       </Box>
     </Box>
   );
@@ -449,9 +464,17 @@ AccountListItem.propTypes = {
    */
   onClick: PropTypes.func,
   /**
+   * Represents how many accounts are being listed
+   */
+  accountsCount: PropTypes.number,
+  /**
    * Function that closes the menu
    */
   closeMenu: PropTypes.func,
+  /**
+   * Function to set account name to show disconnect toast when an account is disconnected
+   */
+  onActionClick: PropTypes.func,
   /**
    * File location of the avatar icon
    */

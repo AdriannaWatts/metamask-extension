@@ -64,8 +64,7 @@ describe('Snap Account Contract interaction', function (this: Suite) {
           WINDOW_TITLES.ExtensionInFullScreenView,
         );
         const headerNavbar = new HeaderNavbar(driver);
-        // BUG #37591 - With BIP44 the account mame is not retained.
-        await headerNavbar.checkAccountLabel('Snap Account 1');
+        await headerNavbar.checkAccountLabel('SSK Account');
 
         // Open Dapp with contract
         const testDapp = new TestDapp(driver);

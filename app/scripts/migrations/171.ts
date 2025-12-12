@@ -156,6 +156,11 @@ function transformState(
   }
 
   if (Object.keys(tokenNetworkFilter).length === 0) {
+    global.sentry?.captureException?.(
+      new Error(
+        `Migration ${version}: tokenNetworkFilter is empty, expected at least one network configuration.`,
+      ),
+    );
     return state;
   }
 

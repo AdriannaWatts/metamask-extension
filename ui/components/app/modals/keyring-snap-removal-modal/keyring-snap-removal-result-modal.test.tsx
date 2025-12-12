@@ -1,8 +1,11 @@
 import React from 'react';
 import configureMockStore from 'redux-mock-store';
 import mockStore from '../../../../../test/data/mock-state.json';
-import { renderWithProvider } from '../../../../../test/lib/render-helpers-navigate';
-import { fireEvent, waitFor } from '../../../../../test/jest';
+import {
+  fireEvent,
+  renderWithProvider,
+  waitFor,
+} from '../../../../../test/jest';
 import KeyringSnapRemovalResult from './keyring-snap-removal-result-modal';
 
 const mockOnClose = jest.fn();

@@ -90,7 +90,6 @@ import { AccountGroupWithInternalAccounts } from '../../../selectors/multichain-
 import { getMultichainNetwork } from '../../../selectors/multichain';
 import { TrustSignalDisplayState } from '../../../hooks/useTrustSignals';
 import { useOriginTrustSignals } from '../../../hooks/useOriginTrustSignals';
-import { MultichainNetworks } from '../../../../shared/constants/multichain/networks';
 
 export type MultichainAccountsConnectPageRequest = {
   permissions?: PermissionsRequest;
@@ -165,18 +164,14 @@ export const MultichainAccountsConnectPage: React.FC<
     requestedCaip25CaveatValue,
   );
 
+  const SOLANA_MAINNET_CAIP_CHAIN_ID =
+    'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp';
+
   const isSolanaWalletStandardRequest =
     requestedScopes.length === 1 &&
-    requestedScopes[0] === MultichainNetworks.SOLANA &&
+    requestedScopes[0] === SOLANA_MAINNET_CAIP_CHAIN_ID &&
     requestedCaip25CaveatValue.sessionProperties[
       KnownSessionProperties.SolanaAccountChangedNotifications
-    ];
-
-  const isTronWalletAdapterRequest =
-    requestedScopes.length === 1 &&
-    requestedScopes[0] === MultichainNetworks.TRON &&
-    requestedCaip25CaveatValue.sessionProperties[
-      KnownSessionProperties.TronAccountChangedNotifications
     ];
 
   const requestedCaip25CaveatValueWithExistingPermissions = useMemo(
@@ -272,11 +267,10 @@ export const MultichainAccountsConnectPage: React.FC<
         )
       : nonTestNetworkConfigurations.map(({ caipChainId }) => caipChainId);
 
-    // If the request is an EIP-1193 request (with no specific chains requested), a Solana wallet standard or a tronWallet library request , return the default selected network list
+    // If the request is an EIP-1193 request (with no specific chains requested) or a Solana wallet standard request , return the default selected network list
     if (
       (requestedCaipChainIds.length === 0 && isEip1193Request) ||
-      isSolanaWalletStandardRequest ||
-      isTronWalletAdapterRequest
+      isSolanaWalletStandardRequest
     ) {
       return defaultSelectedNetworkList;
     }
