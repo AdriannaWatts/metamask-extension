@@ -8,14 +8,10 @@ import { TokenStandard } from '../../../../../../shared/constants/transaction';
 import GeneralAlert from '../../../../../components/app/alert-system/general-alert/general-alert';
 import { Box, Text } from '../../../../../components/component-library';
 import {
-  AlignItems,
-  Display,
-  FlexDirection,
   TextAlign,
   TextColor,
   TextVariant,
 } from '../../../../../helpers/constants/design-system';
-import { Skeleton } from '../../../../../components/component-library/skeleton';
 import useAlerts from '../../../../../hooks/useAlerts';
 import { useI18nContext } from '../../../../../hooks/useI18nContext';
 import { TypedSignSignaturePrimaryTypes } from '../../../constants';
@@ -90,69 +86,67 @@ const getTitle = (
   primaryType?: keyof typeof TypedSignSignaturePrimaryTypes,
   tokenStandard?: string,
   isUpgradeOnly?: boolean,
-): string | undefined => {
-  let title: string;
+) => {
+  if (pending) {
+    return '';
+  }
 
   switch (confirmation?.type) {
     case TransactionType.contractInteraction:
-      title = t('confirmTitleTransaction');
-      break;
+      return t('confirmTitleTransaction');
     case TransactionType.batch:
-      title = isUpgradeOnly
-        ? t('confirmTitleAccountTypeSwitch')
-        : t('confirmTitleTransaction');
-      break;
+      if (isUpgradeOnly) {
+        return t('confirmTitleAccountTypeSwitch');
+      }
+      return t('confirmTitleTransaction');
     case TransactionType.deployContract:
-      title = t('confirmTitleDeployContract');
-      break;
+      return t('confirmTitleDeployContract');
     case TransactionType.personalSign:
-      title = isSIWESignatureRequest(confirmation as SignatureRequestType)
-        ? t('confirmTitleSIWESignature')
-        : t('confirmTitleSignature');
-      break;
+      if (isSIWESignatureRequest(confirmation as SignatureRequestType)) {
+        return t('confirmTitleSIWESignature');
+      }
+      return t('confirmTitleSignature');
     case TransactionType.revokeDelegation:
-      title = t('confirmTitleAccountTypeSwitch');
-      break;
+      return t('confirmTitleAccountTypeSwitch');
     case TransactionType.signTypedData:
       if (primaryType === TypedSignSignaturePrimaryTypes.PERMIT) {
         const isRevokeDAIPermit = getIsRevokeDAIPermit(
           confirmation as SignatureRequestType,
         );
         if (isRevokeDAIPermit || customSpendingCap === '0') {
-          title = t('confirmTitleRevokeApproveTransaction');
-        } else if (tokenStandard === TokenStandard.ERC721) {
-          title = t('setApprovalForAllRedesignedTitle');
-        } else {
-          title = t('confirmTitlePermitTokens');
+          return t('confirmTitleRevokeApproveTransaction');
         }
-      } else if ((confirmation as SignatureRequestType).decodedPermission) {
-        title = t('confirmTitlePermission');
-      } else {
-        title = t('confirmTitleSignature');
+
+        if (tokenStandard === TokenStandard.ERC721) {
+          return t('setApprovalForAllRedesignedTitle');
+        }
+
+        return t('confirmTitlePermitTokens');
       }
-      break;
+
+      if ((confirmation as SignatureRequestType).decodedPermission) {
+        return t('confirmTitlePermission');
+      }
+
+      return t('confirmTitleSignature');
     case TransactionType.tokenMethodApprove:
       if (isNFT) {
-        title = t('confirmTitleApproveTransactionNFT');
-      } else if (customSpendingCap === '0') {
-        title = t('confirmTitleRevokeApproveTransaction');
-      } else {
-        title = t('confirmTitlePermitTokens');
+        return t('confirmTitleApproveTransactionNFT');
       }
-      break;
+      if (customSpendingCap === '0') {
+        return t('confirmTitleRevokeApproveTransaction');
+      }
+      return t('confirmTitlePermitTokens');
     case TransactionType.tokenMethodIncreaseAllowance:
-      title = t('confirmTitlePermitTokens');
-      break;
+      return t('confirmTitlePermitTokens');
     case TransactionType.tokenMethodSetApprovalForAll:
-      title = isRevokeSetApprovalForAll
-        ? t('confirmTitleSetApprovalForAllRevokeTransaction')
-        : t('setApprovalForAllRedesignedTitle');
-      break;
+      if (isRevokeSetApprovalForAll) {
+        return t('confirmTitleSetApprovalForAllRevokeTransaction');
+      }
+      return t('setApprovalForAllRedesignedTitle');
     default:
-      return undefined;
+      return '';
   }
-
-  return pending ? '' : title;
 };
 
 const getDescription = (
@@ -228,22 +222,6 @@ const getDescription = (
   }
 };
 
-// TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export function TitleSkeleton() {
-  return (
-    <Box
-      display={Display.Flex}
-      flexDirection={FlexDirection.Column}
-      alignItems={AlignItems.center}
-      paddingTop={4}
-      paddingBottom={4}
-    >
-      <Skeleton height="24px" width="200px" />
-    </Box>
-  );
-}
-
 const ConfirmTitle: React.FC = memo(() => {
   const t = useI18nContext();
   const { currentConfirmation } = useConfirmContext();
@@ -318,16 +296,13 @@ const ConfirmTitle: React.FC = memo(() => {
   );
 
   if (!currentConfirmation) {
-    return <TitleSkeleton />;
+    return null;
   }
-
-  // Show skeleton only if title is pending AND the type is handled by getTitle
-  const showTitleSkeleton = spendingCapPending && title !== undefined;
 
   return (
     <>
       <ConfirmBannerAlert ownerId={currentConfirmation.id} />
-      {title ? (
+      {title !== '' && (
         <Text
           variant={TextVariant.headingLg}
           paddingTop={4}
@@ -336,8 +311,6 @@ const ConfirmTitle: React.FC = memo(() => {
         >
           {title}
         </Text>
-      ) : (
-        showTitleSkeleton && <TitleSkeleton />
       )}
       <NestedTransactionTag />
       {description !== '' && (

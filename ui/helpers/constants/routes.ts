@@ -79,6 +79,7 @@ export const REMOTE_ROUTE = '/remote';
 export const REMOTE_ROUTE_SETUP_SWAPS = '/remote/setup-swaps';
 export const REMOTE_ROUTE_SETUP_DAILY_ALLOWANCE =
   '/remote/setup-daily-allowance';
+export const CONNECTIONS = '/connections';
 export const PERMISSIONS = '/permissions';
 export const GATOR_PERMISSIONS = '/gator-permissions';
 export const TOKEN_TRANSFER_ROUTE = '/gator-permissions/token-transfer';
@@ -352,6 +353,7 @@ export const ROUTES = [
     label: 'Remote Mode Setup Daily Allowance Page',
     trackInAnalytics: true,
   },
+  { path: CONNECTIONS, label: 'Connections', trackInAnalytics: true },
   { path: PERMISSIONS, label: 'Permissions', trackInAnalytics: true },
   {
     path: `${CONNECT_ROUTE}/:id`,

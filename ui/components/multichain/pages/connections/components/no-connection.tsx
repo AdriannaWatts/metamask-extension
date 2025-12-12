@@ -14,7 +14,7 @@ export const NoConnectionContent = () => {
   const t = useI18nContext();
   return (
     <Box
-      className="connections-page__no-site-connected-content h-full"
+      className="connections-page__no-site-connected-content"
       display={Display.Flex}
       flexDirection={FlexDirection.Column}
       alignItems={AlignItems.center}

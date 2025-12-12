@@ -3,13 +3,6 @@ import { Driver } from '../../../../webdriver/driver';
 class ConnectAccountConfirmation {
   driver: Driver;
 
-  private readonly accountListItem = (accountName: string) => {
-    return {
-      css: '.multichain-account-cell__account-name',
-      text: accountName,
-    };
-  };
-
   private readonly addSolanaAccountButton = {
     testId: 'submit-add-account-with-name',
   };
@@ -100,8 +93,18 @@ class ConnectAccountConfirmation {
 
   async createCreateSolanaAccountFromModal(): Promise<void> {
     console.log('Create Solana account from modal');
-    await this.driver.clickElement(this.createSolanaAccountModalButton);
-    await this.driver.clickElement(this.addSolanaAccountButton);
+    const createSolanaAccountModalButton = await this.driver.findElement(
+      this.createSolanaAccountModalButton,
+    );
+    await createSolanaAccountModalButton.click();
+
+    const addSolanaAccountButton = await this.driver.findClickableElement(
+      this.addSolanaAccountButton,
+      {
+        timeout: 1000,
+      },
+    );
+    await addSolanaAccountButton.click();
   }
 
   async isCreateSolanaAccountModalButtonVisible(): Promise<boolean> {
@@ -131,12 +134,6 @@ class ConnectAccountConfirmation {
     }
     console.log('Confirm button is enabled');
     return true;
-  }
-
-  async checkForAccountsInPermissionList(accounts: string[]): Promise<void> {
-    for (const account of accounts) {
-      await this.driver.waitForSelector(this.accountListItem(account));
-    }
   }
 }
 

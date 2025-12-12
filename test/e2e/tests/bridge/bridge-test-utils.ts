@@ -16,7 +16,6 @@ import AccountListPage from '../../page-objects/pages/account-list-page';
 import HomePage from '../../page-objects/pages/home/homepage';
 import { MOCK_META_METRICS_ID } from '../../constants';
 import { mockSegment } from '../metrics/mocks/segment';
-import { BIP44_STAGE_TWO } from '../multichain-accounts/feature-flag-mocks';
 import {
   ETH_CONVERSION_RATE_USD,
   MOCK_CURRENCY_RATES,
@@ -147,11 +146,11 @@ export const bridgeTransaction = async ({
       action: isBridge
         ? `Bridged to ${quote.toChain}`
         : `Swapped ${quote.tokenFrom} to ${quote.tokenTo}`,
-      confirmedTx: expectedTransactionsCount,
+      completedTxs: expectedTransactionsCount,
     });
     await activityList.checkTxAction({
       action: `Approve ${quote.tokenFrom} for ${isBridge ? 'bridge' : 'swap'}`,
-      confirmedTx: expectedTransactionsCount,
+      completedTxs: expectedTransactionsCount,
       txIndex: 2,
     });
   } else {
@@ -159,7 +158,7 @@ export const bridgeTransaction = async ({
       action: isBridge
         ? `Bridged to ${quote.toChain}`
         : `Swap ${quote.tokenFrom ?? expectedSwapTokens?.tokenFrom} to ${quote.tokenTo ?? expectedSwapTokens?.tokenTo}`,
-      confirmedTx: expectedTransactionsCount,
+      completedTxs: expectedTransactionsCount,
     });
   }
   // Check the amount of ETH deducted in the activity is correct
@@ -376,7 +375,7 @@ async function mockFeatureFlags(
       return {
         ok: true,
         statusCode: 200,
-        json: [{ bridgeConfig: featureFlags, ...BIP44_STAGE_TWO }],
+        json: [{ bridgeConfig: featureFlags }],
       };
     });
 }
@@ -838,7 +837,6 @@ export const getBridgeFixtures = (
   }
 
   return {
-    forceBip44Version: false,
     fixtures: fixtureBuilder.build(),
     testSpecificMock: async (mockServer: Mockttp) => {
       const standardMocks = [
@@ -937,6 +935,8 @@ export const getQuoteNegativeCasesFixtures = (
     .withEnabledNetworks({
       eip155: {
         '0x1': true,
+        '0xe708': true,
+        '0xa4b1': true,
       },
     });
 
@@ -951,7 +951,6 @@ export const getQuoteNegativeCasesFixtures = (
     manifestFlags: {
       remoteFeatureFlags: {
         bridgeConfig: featureFlags,
-        ...BIP44_STAGE_TWO,
       },
       testing: { disableSmartTransactionsOverride: true },
     },
@@ -961,7 +960,7 @@ export const getQuoteNegativeCasesFixtures = (
         type: 'anvil',
         options: {
           chainId: 1,
-          hardfork: 'london',
+          hardfork: 'muirGlacier',
         },
       },
     ],
@@ -984,6 +983,7 @@ export const getBridgeNegativeCasesFixtures = (
     .withEnabledNetworks({
       eip155: {
         '0x1': true,
+        '0xe708': true,
       },
     });
 
@@ -999,7 +999,6 @@ export const getBridgeNegativeCasesFixtures = (
     manifestFlags: {
       remoteFeatureFlags: {
         bridgeConfig: featureFlags,
-        ...BIP44_STAGE_TWO,
       },
       testing: { disableSmartTransactionsOverride: true },
     },
@@ -1030,6 +1029,7 @@ export const getInsufficientFundsFixtures = (
     .withEnabledNetworks({
       eip155: {
         '0x1': true,
+        '0xe708': true,
       },
     });
 
@@ -1044,7 +1044,6 @@ export const getInsufficientFundsFixtures = (
     manifestFlags: {
       remoteFeatureFlags: {
         bridgeConfig: featureFlags,
-        ...BIP44_STAGE_TWO,
       },
     },
     smartContract: SMART_CONTRACTS.HST,

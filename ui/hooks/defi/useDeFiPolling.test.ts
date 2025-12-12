@@ -1,4 +1,4 @@
-import { renderHookWithProvider } from '../../../test/lib/render-helpers-navigate';
+import { renderHookWithProvider } from '../../../test/lib/render-helpers';
 
 import useDeFiPolling from './useDeFiPolling';
 import { deFiStartPolling, deFiStopPolling } from './defiPollingActions';

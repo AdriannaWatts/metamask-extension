@@ -149,7 +149,7 @@ export const MultichainAggregatedAddressListRow = ({
       flexDirection={BoxFlexDirection.Row}
       alignItems={BoxAlignItems.Center}
       justifyContent={BoxJustifyContent.Between}
-      gap={2}
+      gap={3}
       paddingTop={1}
       paddingBottom={1}
       data-testid="multichain-address-row"
@@ -159,12 +159,12 @@ export const MultichainAggregatedAddressListRow = ({
       onMouseLeave={() => setIsHovered(false)}
     >
       <Box
-        gap={2}
+        gap={3}
         flexDirection={BoxFlexDirection.Row}
         alignItems={BoxAlignItems.Center}
       >
         <MultichainAccountNetworkGroup chainIds={chainIds} limit={4} />
-        <Text variant={TextVariant.BodySm} fontWeight={FontWeight.Medium}>
+        <Text variant={TextVariant.BodySm} fontWeight={FontWeight.Bold}>
           {groupName}
         </Text>
       </Box>
@@ -175,19 +175,19 @@ export const MultichainAggregatedAddressListRow = ({
         alignItems={BoxAlignItems.Center}
       >
         <Text
-          variant={TextVariant.BodySm}
+          variant={TextVariant.BodyXs}
           fontWeight={FontWeight.Medium}
           textAlign={TextAlign.Right}
           color={getTextColor()}
           style={{
-            minWidth: '100px',
+            width: '100px',
           }}
         >
           {displayText}
         </Text>
         <Icon
           name={copyIcon}
-          size={IconSize.Sm}
+          size={IconSize.Xs}
           color={getIconColor()}
           aria-label={t('copyAddressShort')}
         />

@@ -49,8 +49,6 @@ const createTransactionMetricsRequest = (customProps = {}) => {
     getNetworkRpcUrl: jest.fn(),
     getFeatureFlags: jest.fn(),
     getPna25Acknowledged: jest.fn(),
-    getAddressSecurityAlertResponse: jest.fn(),
-    getSecurityAlertsEnabled: jest.fn(),
     ...customProps,
   } as TransactionMetricsRequest;
 };
