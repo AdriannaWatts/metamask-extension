@@ -4,9 +4,6 @@ import { useSelector } from 'react-redux';
 import { Container } from '@metamask/snaps-sdk/jsx';
 
 import { isEqual } from 'lodash';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import LuxonUtils from '@date-io/luxon';
-import { ThemeProvider } from '@material-ui/core/styles';
 import MetaMaskTemplateRenderer from '../../metamask-template-renderer/metamask-template-renderer';
 import { getMemoizedInterface } from '../../../../selectors';
 import { Box } from '../../../component-library';
@@ -21,12 +18,7 @@ import {
   JustifyContent,
 } from '../../../../helpers/constants/design-system';
 import { useI18nContext } from '../../../../hooks/useI18nContext';
-import { getIntlLocale } from '../../../../ducks/locale/locale';
-import {
-  mapToExtensionCompatibleColor,
-  mapToTemplate,
-  muiPickerTheme,
-} from './utils';
+import { mapToExtensionCompatibleColor, mapToTemplate } from './utils';
 import { COMPONENT_MAPPING } from './components';
 
 // Component for tracking the number of re-renders
@@ -57,7 +49,6 @@ const SnapUIRendererComponent = ({
   'use no memo';
 
   const t = useI18nContext();
-  const locale = useSelector(getIntlLocale);
 
   const interfaceState = useSelector(
     (state) => getMemoizedInterface(state, interfaceId),
@@ -118,32 +109,23 @@ const SnapUIRendererComponent = ({
 
   const { state: initialState } = interfaceState;
 
-  // The renderer should only have a footer if there is a default cancel action
-  // or if the footer component has been used.
-  const hasFooter = onCancel || content?.props?.children?.[1] !== undefined;
-
   return (
     <SnapInterfaceContextProvider
       snapId={snapId}
       interfaceId={interfaceId}
       initialState={initialState}
     >
-      <ThemeProvider theme={muiPickerTheme}>
-        <MuiPickersUtilsProvider utils={LuxonUtils} locale={locale}>
-          <Box
-            className="snap-ui-renderer__content"
-            height={BlockSize.Full}
-            backgroundColor={backgroundColor}
-            style={{
-              overflowY: 'auto',
-              marginBottom: useFooter && hasFooter ? '80px' : '0',
-            }}
-          >
-            <MetaMaskTemplateRenderer sections={sections} />
-            {PERF_DEBUG && <PerformanceTracker />}
-          </Box>
-        </MuiPickersUtilsProvider>
-      </ThemeProvider>
+      <Box
+        className="snap-ui-renderer__content"
+        height={BlockSize.Full}
+        backgroundColor={backgroundColor}
+        style={{
+          overflowY: 'auto',
+        }}
+      >
+        <MetaMaskTemplateRenderer sections={sections} />
+        {PERF_DEBUG && <PerformanceTracker />}
+      </Box>
     </SnapInterfaceContextProvider>
   );
 };
