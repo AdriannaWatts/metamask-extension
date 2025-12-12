@@ -1,6 +1,7 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom-v5-compat';
 import { providerErrors, serializeError } from '@metamask/rpc-errors';
 import { getTokenTrackerLink } from '@metamask/etherscan-link';
 import classnames from 'classnames';
@@ -63,11 +64,17 @@ import { isEqualCaseInsensitive } from '../../../shared/modules/string-utils';
 import { Nav } from '../confirmations/components/confirm/nav';
 import { hideAppHeader } from '../routes/utils';
 
-const ConfirmAddSuggestedNFT = () => {
+const ConfirmAddSuggestedNFT = ({
+  navigate: routeNavigate,
+  location: routeLocation,
+} = {}) => {
   const t = useContext(I18nContext);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const hookNavigate = useNavigate();
+  const hookLocation = useLocation();
+  // Use navigate/location from props (v5 route) if available, otherwise fall back to hooks (v6)
+  const navigate = routeNavigate || hookNavigate;
+  const location = routeLocation || hookLocation;
 
   const hasAppHeader = location?.pathname ? !hideAppHeader({ location }) : true;
 
@@ -191,7 +198,7 @@ const ConfirmAddSuggestedNFT = () => {
     };
 
     addImageUrlToSuggestedNFTs();
-  }, [suggestedNfts, ipfsGateway]); // rerender when suggestedNfts or ipfsGateway changes
+  }, [suggestedNfts]); // rerender when suggestedNfts changes
 
   return (
     <Box
@@ -456,6 +463,17 @@ const ConfirmAddSuggestedNFT = () => {
       />
     </Box>
   );
+};
+
+ConfirmAddSuggestedNFT.propTypes = {
+  navigate: PropTypes.func,
+  location: PropTypes.shape({
+    pathname: PropTypes.string,
+    search: PropTypes.string,
+    hash: PropTypes.string,
+    state: PropTypes.object,
+    key: PropTypes.string,
+  }),
 };
 
 export default ConfirmAddSuggestedNFT;

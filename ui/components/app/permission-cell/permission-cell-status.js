@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
 import { AvatarAccountSize } from '@metamask/design-system-react';
 import {
   AvatarNetwork,
@@ -26,10 +25,7 @@ import { AvatarType } from '../../multichain/avatar-group/avatar-group.types';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import { formatDate } from '../../../helpers/utils/util';
 import { CHAIN_ID_TO_NETWORK_IMAGE_URL_MAP } from '../../../../shared/constants/network';
-import {
-  getAvatarType,
-  PreferredAvatar,
-} from '../preferred-avatar/preferred-avatar';
+import { PreferredAvatar } from '../preferred-avatar';
 
 /**
  * Renders status of the given permission. Used by PermissionCell component.
@@ -50,7 +46,6 @@ export const PermissionCellStatus = ({
   networks,
 }) => {
   const t = useI18nContext();
-  const avatarAccountVariant = useSelector(getAvatarType);
 
   const renderAccountsGroup = () => (
     <>
@@ -132,7 +127,6 @@ export const PermissionCellStatus = ({
               limit={3}
               members={accounts}
               avatarType={AvatarType.ACCOUNT}
-              variant={avatarAccountVariant}
               size={AvatarTokenSize.Xs}
               width={BlockSize.Min}
               borderColor={BorderColor.backgroundDefault}

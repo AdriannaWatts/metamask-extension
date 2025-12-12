@@ -9,7 +9,7 @@ import {
   AccountWalletType,
   AccountGroupId,
 } from '@metamask/account-api';
-import { renderWithProvider } from '../../../../../test/lib/render-helpers-navigate';
+import { renderWithProvider } from '../../../../../test/jest/rendering';
 import configureStore from '../../../../store/store';
 import { createMockInternalAccount } from '../../../../../test/jest/mocks';
 import {

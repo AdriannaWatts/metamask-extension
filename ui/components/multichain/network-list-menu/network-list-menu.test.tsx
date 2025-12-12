@@ -16,7 +16,7 @@ import {
   MONAD_TESTNET_DISPLAY_NAME,
 } from '../../../../shared/constants/network';
 import { hexToDecimal } from '../../../../shared/modules/conversion.utils';
-import { renderWithProvider } from '../../../../test/lib/render-helpers-navigate';
+import { renderWithProvider } from '../../../../test/lib/render-helpers';
 import { NetworkListMenu } from '.';
 
 const mockSetShowTestNetworks = jest.fn();

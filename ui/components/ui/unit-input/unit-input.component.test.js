@@ -1,6 +1,6 @@
 import React from 'react';
 import { fireEvent } from '@testing-library/react';
-import { renderWithProvider } from '../../../../test/lib/render-helpers-navigate';
+import { renderWithProvider } from '../../../../test/lib/render-helpers';
 import UnitInput from './unit-input.component';
 
 describe('UnitInput Component', () => {

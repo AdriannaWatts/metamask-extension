@@ -11,17 +11,20 @@ import { CaipChainId } from '@metamask/utils';
 import { InternalAccount } from '@metamask/keyring-internal-api';
 import {
   Box,
+  BoxAlignItems,
   BoxFlexDirection,
   BoxJustifyContent,
   Button,
-  ButtonSize,
   ButtonVariant,
   FontWeight,
+  Icon,
+  IconName,
+  IconSize,
   Text,
   TextColor,
   TextVariant,
 } from '@metamask/design-system-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom-v5-compat';
 import { BackgroundColor } from '../../../helpers/constants/design-system';
 import { Popover, PopoverPosition } from '../../component-library';
 import { useI18nContext } from '../../../hooks/useI18nContext';
@@ -304,13 +307,10 @@ export const MultichainHoveredAddressRowsList = ({
         preventOverflow
         isPortal={true}
         offset={[0, 3]}
-        paddingInline={1}
-        paddingBottom={1}
-        paddingTop={1}
         style={{
           zIndex: 99999,
           maxHeight: '400px',
-          minWidth: '340px',
+          minWidth: '320px',
         }}
       >
         <Box
@@ -323,7 +323,7 @@ export const MultichainHoveredAddressRowsList = ({
               flexDirection={BoxFlexDirection.Row}
               justifyContent={BoxJustifyContent.Between}
             >
-              <Text variant={TextVariant.BodySm} fontWeight={FontWeight.Medium}>
+              <Text variant={TextVariant.BodyMd} fontWeight={FontWeight.Bold}>
                 {accountGroup?.metadata.name}
               </Text>
               <Text
@@ -336,26 +336,21 @@ export const MultichainHoveredAddressRowsList = ({
             </Box>
           )}
           <Box marginBottom={2}>{renderedRows}</Box>
-          <Box
-            paddingBottom={1}
-            className="multichain-address-rows-border"
-            style={{
-              borderTop: '1px solid var(--color-border-muted)',
-            }}
-          />
-          <Box>
-            <Button
-              size={ButtonSize.Sm}
-              variant={ButtonVariant.Tertiary}
-              onClick={handleViewAllClick}
-              style={{ width: '100%' }}
-              className="multichain-address-rows-view-all-button"
+          <Button
+            variant={ButtonVariant.Secondary}
+            onClick={handleViewAllClick}
+          >
+            <Box
+              flexDirection={BoxFlexDirection.Row}
+              alignItems={BoxAlignItems.Center}
+              gap={4}
             >
               <Text variant={TextVariant.BodySm} fontWeight={FontWeight.Medium}>
                 {t('multichainAddressViewAll')}
               </Text>
-            </Button>
-          </Box>
+              <Icon name={IconName.Arrow2Right} size={IconSize.Sm} />
+            </Box>
+          </Button>
         </Box>
       </Popover>
     </>

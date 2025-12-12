@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom-v5-compat';
 import { Box } from '../../../component-library';
 import Spinner from '../../../ui/spinner';
 import {

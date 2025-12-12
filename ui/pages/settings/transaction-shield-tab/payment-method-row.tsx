@@ -124,14 +124,11 @@ export const PaymentMethodRow = ({
     }
 
     const cryptoPayment =
-      displayedShieldSubscription.paymentMethod as SubscriptionCryptoPaymentMethod & {
-        crypto: { tokenAddress: string }; // TODO: token Address is returned from backend, but controller type is not updated yet, should remove this after upgrading subscription controller
-      };
+      displayedShieldSubscription.paymentMethod as SubscriptionCryptoPaymentMethod;
 
     return availableTokenBalances.filter(
       (token) =>
-        token.address?.toLocaleLowerCase() !==
-          cryptoPayment.crypto.tokenAddress?.toLocaleLowerCase() ||
+        token.symbol !== cryptoPayment.crypto.tokenSymbol ||
         token.chainId.toLowerCase() !==
           cryptoPayment.crypto.chainId.toLowerCase(),
     );
@@ -282,7 +279,6 @@ export const PaymentMethodRow = ({
             displayedShieldSubscription.status ===
               SUBSCRIPTION_STATUSES.provisional // payment method crypto verifying, can't change yet
           }
-          data-testid="shield-detail-payment-method-button"
         >
           {displayedShieldSubscription.paymentMethod.crypto.tokenSymbol}
         </TextButton>

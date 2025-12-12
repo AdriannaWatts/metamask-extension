@@ -2,7 +2,7 @@ import { isValidHexAddress } from '@metamask/controller-utils';
 import PropTypes from 'prop-types';
 import React, { useContext, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom-v5-compat';
 import { getErrorMessage } from '../../../../shared/modules/error';
 import {
   MetaMetricsEventName,
@@ -95,6 +95,7 @@ export const ImportNftsModal = ({ onClose }) => {
   const existingNfts = useNftsCollections();
   const [nftAddress, setNftAddress] = useState(initialTokenAddress ?? '');
   const [tokenId, setTokenId] = useState(initialTokenId ?? '');
+  const [disabled, setDisabled] = useState(true);
   const [nftAddFailed, setNftAddFailed] = useState(false);
   const trackEvent = useContext(MetaMetricsContext);
 
@@ -102,10 +103,8 @@ export const ImportNftsModal = ({ onClose }) => {
 
   const [selectedNetworkForCustomImport, setSelectedNetworkForCustomImport] =
     useState(null);
-  const [
-    selectedNetworkClientIdForCustomImport,
-    setSelectedNetworkClientIdForCustomImport,
-  ] = useState(null);
+  const [selectedNetworkClientId, setSelectedNetworkClientIdForCustomImport] =
+    useState(null);
 
   const networkConfigurations = useSelector(getNetworkConfigurationsByChainId);
 
@@ -113,23 +112,12 @@ export const ImportNftsModal = ({ onClose }) => {
     useState(null);
   const [duplicateTokenIdError, setDuplicateTokenIdError] = useState(null);
 
-  const isFormDisabled =
-    !selectedNetworkForCustomImport ||
-    !isValidHexAddress(nftAddress) ||
-    !tokenId ||
-    Number.isNaN(Number(tokenId)) ||
-    Boolean(nftAddressValidationError) ||
-    Boolean(duplicateTokenIdError);
-
   const handleAddNft = async () => {
     trace({ name: TraceName.ImportNfts });
     try {
       await dispatch(
-        addNftVerifyOwnership(
-          nftAddress,
-          tokenId,
-          selectedNetworkClientIdForCustomImport,
-        ),
+        // selectedNetworkClientId is for the network the NFT is on, not the globally selected network of the wallet
+        addNftVerifyOwnership(nftAddress, tokenId, selectedNetworkClientId),
       );
       const newNftDropdownState = {
         ...nftsDropdownState,
@@ -153,7 +141,7 @@ export const ImportNftsModal = ({ onClose }) => {
     }
 
     if (ignoreErc20Token && nftAddress) {
-      dispatch(
+      await dispatch(
         ignoreTokens({
           tokensToIgnore: nftAddress,
           dontShowLoadingIndicator: true,
@@ -163,15 +151,11 @@ export const ImportNftsModal = ({ onClose }) => {
     }
     dispatch(setNewNftAddedMessage('success'));
 
-    const tokenDetails = await Promise.race([
-      getTokenStandardAndDetails(nftAddress, null, tokenId.toString()),
-      new Promise((_, reject) =>
-        setTimeout(
-          () => reject(new Error('getTokenStandardAndDetails timeout')),
-          3000,
-        ),
-      ),
-    ]).catch(() => ({}));
+    const tokenDetails = await getTokenStandardAndDetails(
+      nftAddress,
+      null,
+      tokenId.toString(),
+    ).catch(() => ({}));
 
     trackEvent({
       event: MetaMetricsEventName.TokenAdded,
@@ -195,6 +179,7 @@ export const ImportNftsModal = ({ onClose }) => {
     if (val && !isValidHexAddress(val)) {
       setNftAddressValidationError(t('invalidAddress'));
     }
+    setDisabled(!isValidHexAddress(val) || !tokenId);
     setNftAddress(val);
   };
 
@@ -209,6 +194,13 @@ export const ImportNftsModal = ({ onClose }) => {
     if (tokenIdExists) {
       setDuplicateTokenIdError(t('nftAlreadyAdded'));
     }
+    setDisabled(
+      !isValidHexAddress(nftAddress) ||
+        !val ||
+        isNaN(Number(val)) ||
+        tokenIdExists,
+    );
+
     setTokenId(val);
   };
 
@@ -417,7 +409,7 @@ export const ImportNftsModal = ({ onClose }) => {
           <ButtonPrimary
             size={Size.LG}
             onClick={() => handleAddNft()}
-            disabled={isFormDisabled}
+            disabled={disabled}
             block
             data-testid="import-nfts-modal-import-button"
           >
