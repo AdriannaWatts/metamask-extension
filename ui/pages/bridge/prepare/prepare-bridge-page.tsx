@@ -310,8 +310,8 @@ const PrepareBridgePage = ({
   const quoteParams:
     | Parameters<BridgeController['updateBridgeQuoteRequestParams']>[0]
     | undefined = useMemo(() => {
-    const srcTokenAddress = fromToken?.address ?? fromToken?.assetId;
-    const destTokenAddress = toToken?.address ?? toToken?.assetId;
+    const srcTokenAddress = fromToken?.assetId ?? fromToken?.address;
+    const destTokenAddress = toToken?.assetId ?? toToken?.address;
 
     if (!selectedAccount?.address) {
       return undefined;
@@ -480,9 +480,6 @@ const PrepareBridgePage = ({
             };
             dispatch(setFromToken(bridgeToken));
             dispatch(setFromTokenInputValue(null));
-            if (token.address === toToken?.address) {
-              dispatch(setToToken(null));
-            }
           }}
           networkProps={{
             // @ts-expect-error other network fields are not used by the asset picker
@@ -580,7 +577,7 @@ const PrepareBridgePage = ({
               }
               onClick={() => {
                 dispatch(setSelectedQuote(null));
-                if (!toChain) {
+                if (!toChain || !fromToken || !toToken) {
                   return;
                 }
                 // Track the flip event
