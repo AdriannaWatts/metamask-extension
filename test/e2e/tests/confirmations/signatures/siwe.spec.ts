@@ -66,7 +66,10 @@ describe('Confirmation Signature - SIWE', function (this: Suite) {
           driver,
           mockedEndpoints: mockedEndpoints as MockedEndpoint[],
           signatureType: 'personal_sign',
-          uiCustomizations: ['sign_in_with_ethereum'],
+          uiCustomizations: [
+            'redesigned_confirmation',
+            'sign_in_with_ethereum',
+          ],
           securityAlertReason: BlockaidReason.notApplicable,
           securityAlertResponse: BlockaidResultType.NotApplicable,
           requestedThrough: MetaMetricsRequestedThrough.EthereumProvider,
@@ -96,7 +99,10 @@ describe('Confirmation Signature - SIWE', function (this: Suite) {
           driver,
           mockedEndpoints: mockedEndpoints as MockedEndpoint[],
           signatureType: 'personal_sign',
-          uiCustomizations: ['sign_in_with_ethereum'],
+          uiCustomizations: [
+            'redesigned_confirmation',
+            'sign_in_with_ethereum',
+          ],
           location: 'confirmation',
           requestedThrough: MetaMetricsRequestedThrough.EthereumProvider,
           securityAlertReason: BlockaidReason.notApplicable,

@@ -20,7 +20,6 @@ export default function UserPreferencedCurrencyDisplay({
   showNative,
   shouldCheckShowNativeToken,
   privacyMode = false,
-  chainId,
   ...restProps
 }) {
   // NOTE: When displaying currencies, we need the actual account to detect whether we're in a
@@ -32,18 +31,14 @@ export default function UserPreferencedCurrencyDisplay({
   const evmAccount = useSelector(getSelectedEvmInternalAccount);
   const account = multichainAccount ?? evmAccount;
 
-  const { currency, numberOfDecimals } = useUserPreferencedCurrency(
-    type,
-    {
-      account,
-      ethNumberOfDecimals,
-      numberOfDecimals: propsNumberOfDecimals,
-      showFiatOverride: showFiat,
-      showNativeOverride: showNative,
-      shouldCheckShowNativeToken,
-    },
-    chainId,
-  );
+  const { currency, numberOfDecimals } = useUserPreferencedCurrency(type, {
+    account,
+    ethNumberOfDecimals,
+    numberOfDecimals: propsNumberOfDecimals,
+    showFiatOverride: showFiat,
+    showNativeOverride: showNative,
+    shouldCheckShowNativeToken,
+  });
   return (
     <CurrencyDisplay
       {...restProps}
@@ -53,7 +48,6 @@ export default function UserPreferencedCurrencyDisplay({
       numberOfDecimals={numberOfDecimals}
       suffix={false}
       privacyMode={privacyMode}
-      chainId={chainId}
     />
   );
 }
@@ -75,7 +69,6 @@ const UserPreferencedCurrencyDisplayPropTypes = {
   ]),
   showFiat: PropTypes.bool,
   showNative: PropTypes.bool,
-  chainId: PropTypes.string,
   /**
    * Following are the props from CurrencyDisplay component.
    * UserPreferencedCurrencyDisplay component should also accept all the props from Currency component

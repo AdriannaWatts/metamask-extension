@@ -24,6 +24,7 @@ import {
 import {
   MetaMetricsTransactionEventSource,
   MetaMetricsEventCategory,
+  MetaMetricsEventUiCustomization,
   MetaMetricsEventTransactionEstimateType,
 } from '../../../../shared/constants/metametrics';
 import { TRANSACTION_ENVELOPE_TYPE_NAMES } from '../../../../shared/lib/transactions-controller-utils';
@@ -106,8 +107,6 @@ const mockTransactionMetricsRequest = {
   getNetworkRpcUrl: jest.fn(),
   getFeatureFlags: jest.fn(),
   getPna25Acknowledged: jest.fn(),
-  getAddressSecurityAlertResponse: jest.fn(),
-  getSecurityAlertsEnabled: jest.fn(),
 } as TransactionMetricsRequest;
 
 describe('Transaction metrics', () => {
@@ -185,9 +184,6 @@ describe('Transaction metrics', () => {
       account_type: undefined,
       // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      address_alert_response: 'not_applicable',
-      // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
-      // eslint-disable-next-line @typescript-eslint/naming-convention
       api_method: MESSAGE_TYPE.ETH_SEND_TRANSACTION,
       // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
       // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -243,7 +239,7 @@ describe('Transaction metrics', () => {
       transaction_type: TransactionType.simpleSend,
       // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      ui_customizations: null,
+      ui_customizations: ['redesigned_confirmation'],
       // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
       // eslint-disable-next-line @typescript-eslint/naming-convention
       transaction_advanced_view: undefined,
@@ -348,7 +344,10 @@ describe('Transaction metrics', () => {
         persist: true,
         properties: {
           ...expectedProperties,
-          ui_customizations: ['gas_estimation_failed'],
+          ui_customizations: [
+            'gas_estimation_failed',
+            'redesigned_confirmation',
+          ],
           gas_estimation_failed: true,
         },
         sensitiveProperties: expectedSensitiveProperties,
@@ -378,7 +377,10 @@ describe('Transaction metrics', () => {
           ...expectedProperties,
           security_alert_reason: BlockaidReason.maliciousDomain,
           security_alert_response: 'Malicious',
-          ui_customizations: ['flagged_as_malicious'],
+          ui_customizations: [
+            'flagged_as_malicious',
+            'redesigned_confirmation',
+          ],
           ppom_eth_call_count: 5,
           ppom_eth_getCode_count: 3,
         },
@@ -468,7 +470,10 @@ describe('Transaction metrics', () => {
         persist: true,
         properties: {
           ...expectedProperties,
-          ui_customizations: ['flagged_as_malicious'],
+          ui_customizations: [
+            'flagged_as_malicious',
+            'redesigned_confirmation',
+          ],
           security_alert_reason: BlockaidReason.maliciousDomain,
           security_alert_response: 'Malicious',
           ppom_eth_call_count: 5,
@@ -487,7 +492,10 @@ describe('Transaction metrics', () => {
             ...expectedProperties,
             // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            ui_customizations: ['flagged_as_malicious'],
+            ui_customizations: [
+              'flagged_as_malicious',
+              'redesigned_confirmation',
+            ],
             // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
             // eslint-disable-next-line @typescript-eslint/naming-convention
             security_alert_reason: BlockaidReason.maliciousDomain,
@@ -615,7 +623,10 @@ describe('Transaction metrics', () => {
         persist: true,
         properties: {
           ...expectedProperties,
-          ui_customizations: ['flagged_as_malicious'],
+          ui_customizations: [
+            'flagged_as_malicious',
+            'redesigned_confirmation',
+          ],
           security_alert_reason: BlockaidReason.maliciousDomain,
           security_alert_response: 'Malicious',
           ppom_eth_call_count: 5,
@@ -637,7 +648,10 @@ describe('Transaction metrics', () => {
             ...expectedProperties,
             // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            ui_customizations: ['flagged_as_malicious'],
+            ui_customizations: [
+              'flagged_as_malicious',
+              'redesigned_confirmation',
+            ],
             // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
             // eslint-disable-next-line @typescript-eslint/naming-convention
             security_alert_reason: BlockaidReason.maliciousDomain,
@@ -826,7 +840,10 @@ describe('Transaction metrics', () => {
         persist: true,
         properties: {
           ...expectedProperties,
-          ui_customizations: ['flagged_as_malicious'],
+          ui_customizations: [
+            'flagged_as_malicious',
+            'redesigned_confirmation',
+          ],
           security_alert_reason: BlockaidReason.maliciousDomain,
           security_alert_response: 'Malicious',
           ppom_eth_call_count: 5,
@@ -850,7 +867,10 @@ describe('Transaction metrics', () => {
             ...expectedProperties,
             // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            ui_customizations: ['flagged_as_malicious'],
+            ui_customizations: [
+              'flagged_as_malicious',
+              'redesigned_confirmation',
+            ],
             // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
             // eslint-disable-next-line @typescript-eslint/naming-convention
             security_alert_reason: BlockaidReason.maliciousDomain,
@@ -905,7 +925,9 @@ describe('Transaction metrics', () => {
         asset_type: AssetType.unknown,
         // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        ui_customizations: null,
+        ui_customizations: [
+          MetaMetricsEventUiCustomization.RedesignedConfirmation,
+        ],
         // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
         // eslint-disable-next-line @typescript-eslint/naming-convention
         is_smart_transaction: undefined,
@@ -1130,7 +1152,10 @@ describe('Transaction metrics', () => {
         persist: true,
         properties: {
           ...expectedProperties,
-          ui_customizations: ['flagged_as_malicious'],
+          ui_customizations: [
+            'flagged_as_malicious',
+            'redesigned_confirmation',
+          ],
           security_alert_reason: BlockaidReason.maliciousDomain,
           security_alert_response: 'Malicious',
           ppom_eth_call_count: 5,
@@ -1153,7 +1178,10 @@ describe('Transaction metrics', () => {
             ...expectedProperties,
             // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            ui_customizations: ['flagged_as_malicious'],
+            ui_customizations: [
+              'flagged_as_malicious',
+              'redesigned_confirmation',
+            ],
             // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
             // eslint-disable-next-line @typescript-eslint/naming-convention
             security_alert_reason: BlockaidReason.maliciousDomain,
@@ -1269,7 +1297,10 @@ describe('Transaction metrics', () => {
         persist: true,
         properties: {
           ...expectedProperties,
-          ui_customizations: ['flagged_as_malicious'],
+          ui_customizations: [
+            'flagged_as_malicious',
+            'redesigned_confirmation',
+          ],
           security_alert_reason: BlockaidReason.maliciousDomain,
           security_alert_response: 'Malicious',
           ppom_eth_call_count: 5,
@@ -1288,7 +1319,10 @@ describe('Transaction metrics', () => {
             ...expectedProperties,
             // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            ui_customizations: ['flagged_as_malicious'],
+            ui_customizations: [
+              'flagged_as_malicious',
+              'redesigned_confirmation',
+            ],
             // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
             // eslint-disable-next-line @typescript-eslint/naming-convention
             security_alert_reason: BlockaidReason.maliciousDomain,

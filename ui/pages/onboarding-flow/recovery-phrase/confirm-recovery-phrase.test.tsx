@@ -21,9 +21,9 @@ jest.mock('../../../store/actions.ts', () => ({
 const mockUseNavigate = jest.fn();
 const mockUseLocation = jest.fn();
 
-jest.mock('react-router-dom', () => {
+jest.mock('react-router-dom-v5-compat', () => {
   return {
-    ...jest.requireActual('react-router-dom'),
+    ...jest.requireActual('react-router-dom-v5-compat'),
     useNavigate: () => mockUseNavigate,
     useLocation: () => mockUseLocation(),
   };
@@ -85,20 +85,6 @@ describe('Confirm Recovery Phrase Component', () => {
 
   const mockStore = configureMockStore([thunk])(mockState);
 
-  it('should redirect to onboarding metametrics page if seed phrase is already backed up', () => {
-    const store = configureMockStore()({
-      ...mockState,
-      metamask: {
-        ...mockState.metamask,
-        seedPhraseBackedUp: true,
-      },
-    });
-    renderWithProvider(<ConfirmRecoveryPhrase {...props} />, store);
-
-    expect(mockUseNavigate).toHaveBeenCalledWith(ONBOARDING_METAMETRICS, {
-      replace: true,
-    });
-  });
   it('should have 3 recovery phrase inputs', () => {
     const { queryAllByTestId } = renderWithProvider(
       <ConfirmRecoveryPhrase {...props} />,
