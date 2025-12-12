@@ -215,7 +215,7 @@ const PrepareBridgePage = ({
   const { openBuyCryptoInPdapp } = useRamps();
 
   const { tokenAlert } = useTokenAlerts();
-  const securityWarnings = useMemo(
+  const securityWarnings: string[] = useMemo(
     () =>
       [tokenAlert?.description, txAlert?.description].filter(
         (x) => x !== null && x !== undefined,
