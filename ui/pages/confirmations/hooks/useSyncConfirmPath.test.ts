@@ -7,9 +7,9 @@ import useSyncConfirmPath from './useSyncConfirmPath';
 const mockUseNavigate = jest.fn();
 const mockUseParams = jest.fn();
 const mockUseLocation = jest.fn();
-jest.mock('react-router-dom', () => {
+jest.mock('react-router-dom-v5-compat', () => {
   return {
-    ...jest.requireActual('react-router-dom'),
+    ...jest.requireActual('react-router-dom-v5-compat'),
     useNavigate: () => mockUseNavigate,
     useParams: () => mockUseParams(),
     useLocation: () => mockUseLocation(),
@@ -30,15 +30,8 @@ const STATE_MOCK = {
 };
 
 describe('useSyncConfirmPath', () => {
-  const originalLocation = window.location;
-
   beforeEach(() => {
     jest.clearAllMocks();
-    // Mock window.location since the hook reads from global location
-    Object.defineProperty(window, 'location', {
-      value: { pathname: '/confirm-transaction' },
-      writable: true,
-    });
     // Default mock: on confirmation route with no params
     mockUseLocation.mockReturnValue({
       pathname: '/confirm-transaction',
@@ -47,13 +40,6 @@ describe('useSyncConfirmPath', () => {
       state: null,
     });
     mockUseParams.mockReturnValue({});
-  });
-
-  afterEach(() => {
-    Object.defineProperty(window, 'location', {
-      value: originalLocation,
-      writable: true,
-    });
   });
 
   it('should execute correctly', () => {

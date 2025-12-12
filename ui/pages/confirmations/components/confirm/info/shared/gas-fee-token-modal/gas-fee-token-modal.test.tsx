@@ -120,7 +120,6 @@ describe('GasFeeTokenModal', () => {
     useIsGaslessSupportedMock.mockReturnValue({
       isSmartTransaction: true,
       isSupported: true,
-      pending: false,
     });
   });
 
@@ -213,7 +212,6 @@ describe('GasFeeTokenModal', () => {
     useIsGaslessSupportedMock.mockReturnValue({
       isSmartTransaction: false,
       isSupported: true,
-      pending: false,
     });
 
     const result = renderWithConfirmContextProvider(

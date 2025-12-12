@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { renderWithProvider } from '../../../../test/lib/render-helpers-navigate';
+import { renderWithProvider } from '../../../../test/jest';
 import SwapFailureIcon from './swap-failure-icon';
 
 describe('SwapFailureIcon', () => {

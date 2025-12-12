@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux';
 import { TransactionMeta } from '@metamask/transaction-controller';
 import { useConfirmContext } from '../../context/confirm';
 import { getUseTransactionSimulations } from '../../../../selectors';
-import { useHasInsufficientBalance } from '../useHasInsufficientBalance';
+import { useIsInsufficientBalance } from '../useIsInsufficientBalance';
 import { useIsGaslessSupported } from './useIsGaslessSupported';
 
 export function useIsGaslessLoading() {
@@ -11,17 +11,15 @@ export function useIsGaslessLoading() {
 
   const { gasFeeTokens } = transactionMeta ?? {};
 
-  const { isSupported: isGaslessSupported, pending } = useIsGaslessSupported();
+  const { isSupported: isGaslessSupported } = useIsGaslessSupported();
   const isSimulationEnabled = useSelector(getUseTransactionSimulations);
 
-  const { hasInsufficientBalance } = useHasInsufficientBalance();
-
-  const isGaslessSupportedFinished = !pending && isGaslessSupported;
+  const hasInsufficientNative = useIsInsufficientBalance();
 
   const isGaslessLoading =
     isSimulationEnabled &&
-    isGaslessSupportedFinished &&
-    hasInsufficientBalance &&
+    isGaslessSupported &&
+    hasInsufficientNative &&
     !gasFeeTokens;
 
   return { isGaslessLoading };

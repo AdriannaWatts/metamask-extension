@@ -53,11 +53,15 @@ describe('Multiple transactions', function () {
         await driver.clickElement(
           '[data-testid="account-overview__activity-tab"]',
         );
-        const confirmedTxes = await driver.elementCountBecomesN(
-          '.transaction-status-label--confirmed',
-          2,
+        await driver.waitForSelector(
+          '.transaction-list__completed-transactions .activity-list-item:nth-of-type(2)',
         );
-        assert.equal(confirmedTxes, true);
+
+        const confirmedTxes = await driver.findElements(
+          '.transaction-list__completed-transactions .activity-list-item',
+        );
+
+        assert.equal(confirmedTxes.length, 2);
       },
     );
   });
@@ -108,7 +112,7 @@ describe('Multiple transactions', function () {
 
         // The previous isTransactionListEmpty wait already serves as the guard here for the assertElementNotPresent
         await driver.assertElementNotPresent(
-          '.transaction-status-label--confirmed:nth-of-type(1)',
+          '.transaction-list__completed-transactions .activity-list-item',
         );
       },
     );

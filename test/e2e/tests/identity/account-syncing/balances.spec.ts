@@ -55,7 +55,9 @@ describe('Account syncing - Accounts with Balances', function () {
         await header.openAccountMenu();
 
         const accountListPage = new AccountListPage(driver);
-        await accountListPage.checkPageIsLoaded();
+        await accountListPage.checkPageIsLoaded({
+          isMultichainAccountsState2Enabled: true,
+        });
 
         // Should see default account
         await accountListPage.checkAccountDisplayedInAccountList('Account 1');
