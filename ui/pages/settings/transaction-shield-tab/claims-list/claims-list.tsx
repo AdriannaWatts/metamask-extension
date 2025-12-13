@@ -15,7 +15,7 @@ import {
   Button,
   Icon,
 } from '@metamask/design-system-react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom-v5-compat';
 import { Claim } from '@metamask/claims-controller';
 import LoadingScreen from '../../../../components/ui/loading-screen';
 import { useI18nContext } from '../../../../hooks/useI18nContext';

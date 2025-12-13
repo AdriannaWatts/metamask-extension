@@ -1,8 +1,11 @@
 import React from 'react';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { createSwapsMockStore } from '../../../../test/jest';
-import { renderWithProvider } from '../../../../test/lib/render-helpers-navigate';
+
+import {
+  renderWithProvider,
+  createSwapsMockStore,
+} from '../../../../test/jest';
 import {
   QUOTES_EXPIRED_ERROR,
   SWAP_FAILED_ERROR,

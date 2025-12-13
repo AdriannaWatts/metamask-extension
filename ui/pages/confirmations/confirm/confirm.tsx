@@ -9,12 +9,12 @@ import { BlockaidLoadingIndicator } from '../components/confirm/blockaid-loading
 import { ConfirmAlerts } from '../components/confirm/confirm-alerts';
 import { Footer } from '../components/confirm/footer';
 import { Header } from '../components/confirm/header';
-import { Info, InfoSkeleton } from '../components/confirm/info';
+import { Info } from '../components/confirm/info';
 import { LedgerInfo } from '../components/confirm/ledger-info';
 import { SmartTransactionsBannerAlert } from '../components/smart-transactions-banner-alert';
 import { PluggableSection } from '../components/confirm/pluggable-section';
 import ScrollToBottom from '../components/confirm/scroll-to-bottom';
-import { Title, TitleSkeleton } from '../components/confirm/title';
+import { Title } from '../components/confirm/title';
 import EditGasFeePopover from '../components/edit-gas-fee-popover';
 import { ConfirmContextProvider, useConfirmContext } from '../context/confirm';
 import { ConfirmNav } from '../components/confirm/nav/nav';
@@ -42,28 +42,6 @@ const GasFeeContextProviderWrapper: React.FC<{
   );
 };
 
-// Early loading check to show skeletons immediately without waiting for heavy hooks
-const ConfirmContent = () => {
-  const { currentConfirmation } = useConfirmContext();
-
-  if (!currentConfirmation) {
-    return (
-      <>
-        <TitleSkeleton />
-        <InfoSkeleton />
-      </>
-    );
-  }
-
-  return (
-    <>
-      <Title />
-      <Info />
-      <PluggableSection />
-    </>
-  );
-};
-
 const Confirm: React.FC<{ confirmationId?: string }> = ({ confirmationId }) => (
   <ConfirmContextProvider confirmationId={confirmationId}>
     <DappSwapContextProvider>
@@ -79,7 +57,9 @@ const Confirm: React.FC<{ confirmationId?: string }> = ({ confirmationId }) => (
               <ScrollToBottom>
                 <BlockaidLoadingIndicator />
                 <LedgerInfo />
-                <ConfirmContent />
+                <Title />
+                <Info />
+                <PluggableSection />
               </ScrollToBottom>
               <GasFeeTokenToast />
               <Footer />

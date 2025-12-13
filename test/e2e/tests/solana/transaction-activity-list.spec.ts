@@ -9,7 +9,9 @@ import {
   withSolanaAccountSnap,
 } from './common-solana';
 
-describe('Transaction activity list', function (this: Suite) {
+// BUG #37824 - With BIP44 turned on mocking Solana network responses no longer works
+// eslint-disable-next-line mocha/no-skipped-tests
+describe.skip('Transaction activity list', function (this: Suite) {
   it('user can see activity list and a confirmed transaction details', async function () {
     this.timeout(120000);
     await withSolanaAccountSnap(
@@ -57,14 +59,11 @@ describe('Transaction activity list', function (this: Suite) {
       },
       async (driver) => {
         const homePage = new NonEvmHomepage(driver);
-        await homePage.checkPageIsLoaded({ amount: '50' });
+        await homePage.checkPageIsLoaded('50');
         await homePage.goToActivityList();
         const activityList = new ActivityListPage(driver);
         await activityList.checkFailedTxNumberDisplayedInActivity(1);
-        await activityList.checkTxAction({
-          action: 'Interaction',
-          confirmedTx: 0,
-        });
+        await activityList.checkTxAction({ action: 'Interaction' });
         await activityList.clickOnActivity(1);
         const transactionDetails = new TransactionDetailsPage(driver);
 

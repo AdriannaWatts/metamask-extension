@@ -124,12 +124,7 @@ describe('Confirmation Redesign Contract Interaction Component', function () {
           const contractAddress =
             await contractRegistry?.getContractAddress(smartContract);
 
-          await loginWithBalanceValidation(
-            driver,
-            undefined,
-            undefined,
-            '1.21M',
-          );
+          await loginWithBalanceValidation(driver, localNodes?.[0]);
           const testDapp = new TestDapp(driver);
           await testDapp.openTestDappPage({ contractAddress });
           await testDapp.checkPageIsLoaded();

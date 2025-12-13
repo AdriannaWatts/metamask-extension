@@ -1,6 +1,10 @@
 import { Hex } from '@metamask/utils';
 import { useEffect, useMemo } from 'react';
-import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
+import {
+  useNavigate,
+  useLocation,
+  useSearchParams,
+} from 'react-router-dom-v5-compat';
 import { useSelector } from 'react-redux';
 
 import { SEND_ROUTE } from '../../../../helpers/constants/routes';

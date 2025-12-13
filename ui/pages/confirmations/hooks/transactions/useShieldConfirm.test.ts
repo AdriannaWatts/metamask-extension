@@ -2,12 +2,12 @@ import {
   TransactionMeta,
   TransactionType,
 } from '@metamask/transaction-controller';
-import { renderHookWithProvider } from '../../../../../test/lib/render-helpers-navigate';
+import { renderHookWithProvider } from '../../../../../test/lib/render-helpers';
 import { PREVIOUS_ROUTE } from '../../../../helpers/constants/routes';
 import { useShieldConfirm } from './useShieldConfirm';
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock('react-router-dom-v5-compat', () => ({
+  ...jest.requireActual('react-router-dom-v5-compat'),
   useNavigate: jest.fn(),
 }));
 
@@ -16,7 +16,7 @@ const mockNavigate = jest.fn();
 describe('useShieldConfirm', () => {
   beforeEach(() => {
     jest.resetAllMocks();
-    const { useNavigate } = jest.requireMock('react-router-dom');
+    const { useNavigate } = jest.requireMock('react-router-dom-v5-compat');
     useNavigate.mockReturnValue(mockNavigate);
   });
 
