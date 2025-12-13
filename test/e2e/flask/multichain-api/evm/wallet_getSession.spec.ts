@@ -26,9 +26,7 @@ describe('Multichain API', function () {
           await testDapp.openTestDappPage();
           await testDapp.checkPageIsLoaded();
           await testDapp.connectExternallyConnectable(extensionId);
-          const parsedResult = await testDapp.getSession({
-            numberOfResultItems: 1,
-          });
+          const parsedResult = await testDapp.getSession();
 
           assert.deepStrictEqual(
             parsedResult.sessionScopes,
@@ -63,9 +61,7 @@ describe('Multichain API', function () {
           await testDapp.openTestDappPage();
           await testDapp.checkPageIsLoaded();
           await testDapp.connectExternallyConnectable(extensionId);
-          const parsedResult = await testDapp.getSession({
-            numberOfResultItems: 1,
-          });
+          const parsedResult = await testDapp.getSession();
 
           const sessionScope = parsedResult.sessionScopes[DEFAULT_SCOPE];
           const expectedSessionScope = getExpectedSessionScope(DEFAULT_SCOPE, [

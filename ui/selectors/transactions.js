@@ -65,26 +65,21 @@ export const getAllNetworkTransactions = createDeepEqualSelector(
   },
 );
 
-// Safe wrapper that prevents crashes when provider config is unavailable
-const getProviderConfigSafe = (state) => {
-  try {
-    return getProviderConfig(state);
-  } catch {
-    return null;
-  }
-};
-
 export const getCurrentNetworkTransactions = createDeepEqualSelector(
-  getTransactions,
-  getProviderConfigSafe,
-  (transactions, providerConfig) => {
-    if (!transactions.length || !providerConfig) {
+  (state) => {
+    const transactions = getTransactions(state);
+
+    if (!transactions.length) {
       return [];
     }
+
+    const { chainId } = getProviderConfig(state);
+
     return transactions.filter(
-      (transaction) => transaction.chainId === providerConfig.chainId,
+      (transaction) => transaction.chainId === chainId,
     );
   },
+  (transactions) => transactions,
 );
 
 export const incomingTxListSelectorAllChains = createDeepEqualSelector(

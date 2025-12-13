@@ -1,4 +1,4 @@
-import { detectSIWE } from '@metamask/controller-utils';
+import { ApprovalType, detectSIWE } from '@metamask/controller-utils';
 import { errorCodes } from '@metamask/rpc-errors';
 import { isValidAddress } from 'ethereumjs-util';
 import { MESSAGE_TYPE, ORIGIN_METAMASK } from '../../../shared/constants/app';
@@ -26,6 +26,9 @@ import {
   // TODO: Remove restricted import
   // eslint-disable-next-line import/no-restricted-paths
 } from '../../../ui/helpers/utils/metrics';
+// TODO: Remove restricted import
+// eslint-disable-next-line import/no-restricted-paths
+import { shouldUseRedesignForSignatures } from '../../../shared/lib/confirmation.utils';
 import { isSnapPreinstalled } from '../../../shared/lib/snaps/snaps';
 import { getSnapAndHardwareInfoForMetrics } from './snap-keyring/metrics';
 
@@ -71,6 +74,15 @@ const RATE_LIMIT_MAP = {
   [MESSAGE_TYPE.WALLET_GET_CALLS_STATUS]: RATE_LIMIT_TYPES.NON_RATE_LIMITED,
   [MESSAGE_TYPE.WALLET_GET_CAPABILITIES]: RATE_LIMIT_TYPES.NON_RATE_LIMITED,
   [MESSAGE_TYPE.WALLET_SEND_CALLS]: RATE_LIMIT_TYPES.NON_RATE_LIMITED,
+};
+
+const MESSAGE_TYPE_TO_APPROVAL_TYPE = {
+  [MESSAGE_TYPE.PERSONAL_SIGN]: ApprovalType.PersonalSign,
+  [MESSAGE_TYPE.SIGN]: ApprovalType.SignTransaction,
+  [MESSAGE_TYPE.ETH_SIGN_TYPED_DATA]: ApprovalType.EthSignTypedData,
+  [MESSAGE_TYPE.ETH_SIGN_TYPED_DATA_V1]: ApprovalType.EthSignTypedData,
+  [MESSAGE_TYPE.ETH_SIGN_TYPED_DATA_V3]: ApprovalType.EthSignTypedData,
+  [MESSAGE_TYPE.ETH_SIGN_TYPED_DATA_V4]: ApprovalType.EthSignTypedData,
 };
 
 /**
@@ -377,6 +389,17 @@ export default function createRPCMethodTrackingMiddleware({
         if (req.securityAlertResponse?.description) {
           eventProperties.security_alert_description =
             req.securityAlertResponse.description;
+        }
+
+        if (
+          shouldUseRedesignForSignatures({
+            approvalType: MESSAGE_TYPE_TO_APPROVAL_TYPE[invokedMethod],
+          })
+        ) {
+          eventProperties.ui_customizations = [
+            ...(eventProperties.ui_customizations || []),
+            MetaMetricsEventUiCustomization.RedesignedConfirmation,
+          ];
         }
 
         const snapAndHardwareInfo = await getSnapAndHardwareInfoForMetrics(

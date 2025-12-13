@@ -1,6 +1,6 @@
 import configureMockStore from 'redux-mock-store';
 import React from 'react';
-import { renderWithProvider } from '../../../../test/lib/render-helpers-navigate';
+import { renderWithProvider } from '../../../../test/lib/render-helpers';
 import withModalProps from './with-modal-props';
 
 const mockState = {

@@ -16,9 +16,9 @@ import CreatePassword from './create-password';
 
 const mockUseNavigate = jest.fn();
 
-jest.mock('react-router-dom', () => {
+jest.mock('react-router-dom-v5-compat', () => {
   return {
-    ...jest.requireActual('react-router-dom'),
+    ...jest.requireActual('react-router-dom-v5-compat'),
     useNavigate: () => mockUseNavigate,
   };
 });
@@ -380,7 +380,7 @@ describe('Onboarding Create Password', () => {
 
       fireEvent.click(createNewWalletButton as HTMLElement);
 
-      expect(mockCreateNewAccount).toHaveBeenCalled();
+      expect(mockCreateNewAccount).toHaveBeenCalledWith(password);
 
       await waitFor(() => {
         expect(mockUseNavigate).toHaveBeenCalledWith(

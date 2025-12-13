@@ -12,15 +12,51 @@ const tsconfig = ts.parseJsonConfigFileContent(config, ts.sys, './');
  */
 module.exports = {
   root: true,
+  // Suggested addition from the storybook 6.5 update
+  extends: ['plugin:storybook/recommended'],
   // Ignore files which are also in .prettierignore
   ignorePatterns: readFileSync('.prettierignore', 'utf8').trim().split('\n'),
   // eslint's parser, esprima, is not compatible with ESM, so use the babel parser instead
   parser: '@babel/eslint-parser',
+  plugins: ['@metamask/design-tokens'],
+  rules: {
+    '@metamask/design-tokens/color-no-hex': 'error',
+    'import/no-restricted-paths': [
+      'error',
+      {
+        basePath: './',
+        zones: [
+          {
+            target: './app',
+            from: './ui',
+            message:
+              'Should not import from UI in background, use shared directory instead',
+          },
+          {
+            target: './ui',
+            from: './app',
+            message:
+              'Should not import from background in UI, use shared directory instead',
+          },
+          {
+            target: './shared',
+            from: './app',
+            message: 'Should not import from background in shared',
+          },
+          {
+            target: './shared',
+            from: './ui',
+            message: 'Should not import from UI in shared',
+          },
+        ],
+      },
+    ],
+  },
   overrides: [
     /**
      * == Modules ==
      *
-     * The first three sections here, which cover module syntax, are mutually
+     * The first two sections here, which cover module syntax, are mutually
      * exclusive: the set of files covered between them may NOT overlap. This is
      * because we do not allow a file to use two different styles for specifying
      * imports and exports (however theoretically possible it may be).
@@ -37,8 +73,6 @@ module.exports = {
         '.eslintrc.*.js',
         '.mocharc.js',
         '*.config.js',
-        'app/scripts/lockdown-run.js',
-        'app/scripts/lockdown-more.js',
         'development/**/*.js',
         'test/e2e/**/*.js',
         'test/helpers/*.js',
@@ -78,6 +112,7 @@ module.exports = {
       files: [
         'app/**/*.js',
         'shared/**/*.js',
+        'shared/**/*.ts',
         'ui/**/*.js',
         '**/*.test.js',
         'test/lib/**/*.js',
@@ -85,10 +120,6 @@ module.exports = {
         'test/jest/**/*.js',
         'test/stub/**/*.js',
         'test/unit-global/**/*.js',
-      ],
-      excludedFiles: [
-        'app/scripts/lockdown-run.js',
-        'app/scripts/lockdown-more.js',
       ],
       extends: [
         path.resolve(__dirname, '.eslintrc.base.js'),
@@ -243,8 +274,6 @@ module.exports = {
             allowNumber: true,
           },
         ],
-        // TODO: Remove once `@metamask/eslint-config-typescript` is updated to a version with this setting.
-        'consistent-return': 'off',
       },
       settings: {
         'import/resolver': {
@@ -258,6 +287,12 @@ module.exports = {
             alwaysTryTypes: true,
           },
         },
+      },
+    },
+    {
+      files: ['*.d.ts'],
+      parserOptions: {
+        sourceType: 'script',
       },
     },
     /**
@@ -399,9 +434,6 @@ module.exports = {
         // things like force the test to fail.
         '@babel/no-invalid-this': 'off',
         'mocha/no-setup-in-describe': 'off',
-
-        // Static hex values are only discouraged in application code, using them in tests is OK.
-        '@metamask/design-tokens/color-no-hex': 'off',
       },
     },
     /**
@@ -449,10 +481,6 @@ module.exports = {
       rules: {
         'import/unambiguous': 'off',
         'import/named': 'off',
-
-        // Static hex values are only discouraged in application code, using them in tests is OK.
-        '@metamask/design-tokens/color-no-hex': 'off',
-
         // *.snap files weren't parsed by previous versions of this eslint
         // config section, but something got fixed somewhere, and now this rule
         // causes failures. We need to turn it off instead of fix them because
@@ -484,25 +512,17 @@ module.exports = {
       },
     },
     /**
-     * Jest files that aren't currently covered by Jest configuration above
-     *
-     * TODO: Update the `files` list for the Jest configuration.
+     * Migrations
      */
     {
-      files: ['**/*.test.{js,ts,tsx}'],
+      files: ['app/scripts/migrations/*.js', '**/*.stories.js'],
       rules: {
-        // Static hex values are only discouraged in application code, using them in tests is OK.
-        '@metamask/design-tokens/color-no-hex': 'off',
-      },
-    },
-    /**
-     * Legacy migrations
-     */
-    {
-      files: ['app/scripts/migrations/*.js'],
-      rules: {
-        // Disable various rules that our legacy migrations don't follow
-        'import/no-anonymous-default-export': 'off',
+        'import/no-anonymous-default-export': [
+          'error',
+          {
+            allowObject: true,
+          },
+        ],
       },
     },
     /**
@@ -535,30 +555,12 @@ module.exports = {
         Compartment: 'readonly',
       },
     },
-    /**
-     * Storybook
-     */
     {
-      files: ['**/*.stories.js', '**/*.stories.ts', '**/*.stories.tsx'],
-      // Suggested addition from the storybook 6.5 update
-      extends: ['plugin:storybook/recommended'],
-      rules: {
-        // Anonymous object exports are conventional for Storybook files
-        'import/no-anonymous-default-export': [
-          'error',
-          {
-            allowObject: true,
-          },
-        ],
-        // Static hex values are only discouraged in application code, using them in stories is OK.
-        '@metamask/design-tokens/color-no-hex': 'off',
+      files: ['app/scripts/lockdown-run.js', 'app/scripts/lockdown-more.js'],
+      parserOptions: {
+        sourceType: 'script',
       },
     },
-    /**
-     * Modules with sorted keys (to be expanded over time)
-     *
-     * TODO: Either continue migrating code to this rule, or abandon the effort.
-     */
     {
       files: ['ui/pages/settings/*.js'],
       rules: {
@@ -571,13 +573,13 @@ module.exports = {
         ],
       },
     },
-    /**
-     * Modules with sorted imports
-     *
-     * TODO: Remove in favor of `import-x/order`, which our shared config uses.
-     */
     {
       files: ['ui/components/multichain/**/*.{js}'],
+      extends: [
+        path.resolve(__dirname, '.eslintrc.base.js'),
+        path.resolve(__dirname, '.eslintrc.node.js'),
+        path.resolve(__dirname, '.eslintrc.babel.js'),
+      ],
       rules: {
         'sort-imports': [
           'error',
@@ -592,23 +594,18 @@ module.exports = {
       },
     },
     /**
-     * TypeScript declaration files.
-     *
-     * TODO: Move this to `@metamask/eslint-config-typescript`
+     * Don't check for static hex values in .test, .spec or .stories files
      */
     {
-      files: ['**/*.d.ts'],
+      files: [
+        '**/*.test.{js,ts,tsx}',
+        '**/*.spec.{js,ts,tsx}',
+        '**/*.stories.{js,ts,tsx}',
+      ],
       rules: {
-        'import/unambiguous': 'off',
+        '@metamask/design-tokens/color-no-hex': 'off',
       },
     },
-    /**
-     * Prevent new references to deprecated "globally selected network"
-     *
-     * This can be removed after all usages have been removed.
-     *
-     * TODO: Expand coverage to include non-confirmation UI as well.
-     */
     {
       files: ['ui/pages/confirmations/**/*.{js,ts,tsx}'],
       rules: {

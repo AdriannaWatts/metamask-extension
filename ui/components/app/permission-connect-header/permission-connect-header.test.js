@@ -1,16 +1,16 @@
 import React from 'react';
 import { screen } from '@testing-library/react';
 import configureMockStore from 'redux-mock-store';
-import { renderWithProvider } from '../../../../test/lib/render-helpers-navigate';
+import { renderWithProvider } from '../../../../test/jest';
 import PermissionConnectHeader from './permission-connect-header';
 
 const STORE_MOCK = configureMockStore()({ metamask: { pendingApprovals: {} } });
 
 const mockUseNavigate = jest.fn();
 const mockUseLocation = jest.fn();
-jest.mock('react-router-dom', () => {
+jest.mock('react-router-dom-v5-compat', () => {
   return {
-    ...jest.requireActual('react-router-dom'),
+    ...jest.requireActual('react-router-dom-v5-compat'),
     useNavigate: () => mockUseNavigate,
     useLocation: () => mockUseLocation(),
   };

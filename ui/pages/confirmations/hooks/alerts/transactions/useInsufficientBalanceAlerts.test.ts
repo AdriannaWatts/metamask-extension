@@ -106,7 +106,6 @@ describe('useInsufficientBalanceAlerts', () => {
     useIsGaslessSupportedMock.mockReturnValue({
       isSmartTransaction: false,
       isSupported: false,
-      pending: false,
     });
   });
 
@@ -118,7 +117,6 @@ describe('useInsufficientBalanceAlerts', () => {
     useIsGaslessSupportedMock.mockReturnValue({
       isSmartTransaction: false,
       isSupported: true,
-      pending: false,
     });
 
     const alerts = runHook({

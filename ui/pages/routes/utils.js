@@ -1,4 +1,4 @@
-import { matchPath } from 'react-router-dom';
+import { matchPath } from 'react-router-dom-v5-compat';
 // eslint-disable-next-line import/no-restricted-paths
 import { getEnvironmentType } from '../../../app/scripts/lib/util';
 import {
@@ -12,6 +12,7 @@ import {
   CONFIRM_TRANSACTION_ROUTE,
   CONFIRMATION_V_NEXT_ROUTE,
   CONNECT_ROUTE,
+  CONNECTIONS,
   CROSS_CHAIN_SWAP_ROUTE,
   IMPORT_SRP_ROUTE,
   DEFAULT_ROUTE,
@@ -159,6 +160,20 @@ export function hideAppHeader(props) {
   );
 
   if (isPermissionsPage) {
+    return true;
+  }
+
+  const isConnectionsPage = Boolean(
+    matchPath(
+      {
+        path: CONNECTIONS,
+        end: false,
+      },
+      location.pathname,
+    ),
+  );
+
+  if (isConnectionsPage) {
     return true;
   }
 
@@ -367,9 +382,9 @@ export function showAppHeader(props) {
 }
 
 /**
- * Creates a relative location object for use with nested react-router-dom Routes.
+ * Creates a relative location object for use with nested react-router-dom-v5-compat Routes.
  *
- * When using <Routes> and <Route> components inside a parent route,
+ * When using v5-compat <Routes> and <Route> components inside a parent route,
  * the child Routes need to match against paths relative to the parent route,
  * not the full pathname. This function strips the base path prefix from the
  * location to create a relative location. The resulting pathname is guaranteed
@@ -389,7 +404,7 @@ export function showAppHeader(props) {
  * );
  * // relativeLocation.pathname === '/snaps-connect'
  * @example
- * // Usage with v6 Routes:
+ * // Usage with v5-compat Routes:
  * <Routes location={relativeLocation}>
  *   <Route path="/" element={<HomePage />} />
  *   <Route path="/snaps-connect" element={<SnapsConnect />} />
@@ -408,23 +423,6 @@ export function getRelativeLocationForNestedRoutes(location, basePath) {
     ...location,
     pathname: relativePathname,
   };
-}
-
-/**
- * Converts an absolute route path to a relative path for use with nested Routes.
- *
- * When using nested `<Routes>` components inside a parent route with `/*`,
- * child routes need to use relative paths (without the parent's base path prefix).
- * This function strips the base path and leading slash to create a truly relative path.
- *
- * @param {string} absolutePath - The full absolute path (e.g., '/onboarding/completion')
- * @param {string} [basePath] - The base path to remove (e.g., '/onboarding'). Defaults to empty string.
- * @returns {string} The relative path suitable for nested Route matching
- * (e.g., 'completion' or '/' for the base route)
- */
-export function toRelativeRoutePath(absolutePath, basePath = '') {
-  const relativePath = absolutePath.replace(basePath, '').replace(/^\//u, '');
-  return relativePath || '/';
 }
 
 /**

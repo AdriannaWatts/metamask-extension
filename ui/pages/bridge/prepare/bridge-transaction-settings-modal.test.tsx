@@ -7,7 +7,10 @@ import configureStore from '../../../store/store';
 import { createBridgeMockStore } from '../../../../test/data/bridge/mock-bridge-store';
 import * as bridgeSelectors from '../../../ducks/bridge/selectors';
 import CrossChainSwap from '..';
-import { PREPARE_SWAP_ROUTE } from '../../../helpers/constants/routes';
+import {
+  CROSS_CHAIN_SWAP_ROUTE,
+  PREPARE_SWAP_ROUTE,
+} from '../../../helpers/constants/routes';
 import { waitForElementById } from '../../../../test/integration/helpers';
 import { setSlippage } from '../../../ducks/bridge/actions';
 import { sanitizeAmountInput } from '../utils/quote';
@@ -26,7 +29,7 @@ const renderModal = (initialSlippage?: number) => {
   const renderResult = renderWithProvider(
     <CrossChainSwap />,
     store,
-    PREPARE_SWAP_ROUTE,
+    CROSS_CHAIN_SWAP_ROUTE + PREPARE_SWAP_ROUTE,
   );
   store.dispatch(setSlippage(initialSlippage));
   return { ...renderResult, store };

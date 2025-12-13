@@ -161,14 +161,9 @@
         "@ethereumjs/tx>ethereum-cryptography>@scure/bip32": true
       }
     },
-    "react-router-dom": {
-      "globals": {
-        "history": true
-      }
-    },
-    "react-router-dom>@remix-run/router": {
-      "globals": {
-        "history": true
+    "react-router-dom-v5-compat": {
+      "packages": {
+        "react-router-dom>react-router": true
       }
     },
     "@metamask/multichain-network-controller": {
@@ -217,6 +212,7 @@
         "ResizeObserver": false,
         "crypto": false,
         "define": false,
+        "devicePixelRatio": false,
         "h": false,
         "importScripts": false,
         "location": false,
@@ -229,6 +225,16 @@
         "document.createElement": true,
         "navigator": false,
         "navigator.userAgent": true
+      }
+    },
+    "@rive-app/react-canvas": {
+      "globals": {
+        "IntersectionObserver": false,
+        "ResizeObserver": false,
+        "devicePixelRatio": false,
+        "innerHeight": false,
+        "innerWidth": false,
+        "matchMedia": false
       }
     }
   }
