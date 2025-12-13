@@ -1,6 +1,6 @@
 import { UpdateNetworkFields } from '@metamask/network-controller';
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom-v5-compat';
 import { NetworksForm } from '../../../../../pages/settings/networks-tab/networks-form/networks-form';
 import { useNetworkFormState } from '../../../../../pages/settings/networks-tab/networks-form/networks-form-state';
 

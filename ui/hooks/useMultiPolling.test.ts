@@ -1,4 +1,4 @@
-import { renderHookWithProvider } from '../../test/lib/render-helpers-navigate';
+import { renderHookWithProvider } from '../../test/lib/render-helpers';
 import useMultiPolling from './useMultiPolling';
 
 describe('useMultiPolling', () => {

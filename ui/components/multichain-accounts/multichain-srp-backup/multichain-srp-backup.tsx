@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom-v5-compat';
 import classnames from 'classnames';
 import { IconSize } from '@metamask/design-system-react';
 import { Box, Icon, IconName, Text } from '../../component-library';

@@ -3,7 +3,7 @@ import React, { useCallback, useContext, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { KeyringObject, KeyringTypes } from '@metamask/keyring-controller';
 import { AvatarAccountSize } from '@metamask/design-system-react';
-import { useNavigate } from 'react-router-dom';
+import type { To } from 'react-router-dom-v5-compat';
 import {
   MetaMetricsEventCategory,
   MetaMetricsEventKeyType,
@@ -48,10 +48,16 @@ import { AccountDetailsKey } from './account-details-key';
 
 type AccountDetailsProps = {
   address: string;
+  navigate?: {
+    (
+      to: To,
+      options?: { replace?: boolean; state?: Record<string, unknown> },
+    ): void;
+    (delta: number): void;
+  };
 };
 
-export const AccountDetails = ({ address }: AccountDetailsProps) => {
-  const navigate = useNavigate();
+export const AccountDetails = ({ address, navigate }: AccountDetailsProps) => {
   const dispatch = useDispatch();
   const t = useI18nContext();
   const trackEvent = useContext(MetaMetricsContext);

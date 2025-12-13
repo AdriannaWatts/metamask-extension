@@ -4,7 +4,6 @@ import FixtureBuilder from '../../fixtures/fixture-builder';
 import AccountListPage from '../../page-objects/pages/account-list-page';
 import HeaderNavbar from '../../page-objects/pages/header-navbar';
 import HomePage from '../../page-objects/pages/home/homepage';
-import { mockPriceApi } from '../tokens/utils/mocks';
 import {
   loginWithBalanceValidation,
   loginWithoutBalanceValidation,
@@ -16,7 +15,6 @@ describe('Privacy Mode', function () {
       {
         fixtures: new FixtureBuilder().build(),
         title: this.test?.fullTitle(),
-        testSpecificMock: mockPriceApi,
       },
       async ({ driver }: { driver: Driver }) => {
         await loginWithBalanceValidation(driver);
@@ -30,7 +28,7 @@ describe('Privacy Mode', function () {
 
         const accountList = new AccountListPage(driver);
         await accountList.checkPageIsLoaded();
-        await accountList.checkAccountBalanceIsPrivate();
+        await accountList.checkBalanceIsPrivateEverywhere();
       },
     );
   });
@@ -39,16 +37,13 @@ describe('Privacy Mode', function () {
     await withFixtures(
       {
         fixtures: new FixtureBuilder()
-          .withPreferencesControllerShowNativeTokenAsMainBalanceDisabled()
           .withPreferencesController({
             preferences: {
               privacyMode: true,
             },
           })
-          .withEnabledNetworks({ eip155: { '0x1': true } })
           .build(),
         title: this.test?.fullTitle(),
-        testSpecificMock: mockPriceApi,
       },
       async ({ driver }: { driver: Driver }) => {
         await loginWithoutBalanceValidation(driver);
@@ -56,15 +51,14 @@ describe('Privacy Mode', function () {
         const homePage = new HomePage(driver);
         await homePage.checkPageIsLoaded();
         await homePage.togglePrivacyBalance();
-        await homePage.checkExpectedBalanceIsDisplayed('$85,025');
+        await homePage.checkExpectedBalanceIsDisplayed('25 ETH');
 
         const headerNavbar = new HeaderNavbar(driver);
         await headerNavbar.openAccountMenu();
 
         const accountList = new AccountListPage(driver);
         await accountList.checkPageIsLoaded();
-
-        await accountList.checkMultichainAccountBalanceDisplayed('$85,025');
+        await accountList.checkAccountBalanceDisplayed('$42,500');
       },
     );
   });

@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-function getValues(pendingApproval, t, actions, _navigate) {
+function getValues(pendingApproval, t, actions, _history) {
   const { id, requestState } = pendingApproval;
   return {
     content: [
