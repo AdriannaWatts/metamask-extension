@@ -2,8 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 
 import { setBackgroundConnection } from '../../../store/background-connection';
-import { renderWithProvider } from '../../../../test/lib/render-helpers-navigate';
-import { MOCKS, fireEvent } from '../../../../test/jest';
+import { renderWithProvider, MOCKS, fireEvent } from '../../../../test/jest';
 
 import {
   checkNetworkAndAccountSupports1559,
