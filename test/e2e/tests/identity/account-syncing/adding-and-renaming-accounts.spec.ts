@@ -72,7 +72,9 @@ describe('Account syncing - Adding and Renaming Accounts', function () {
         await header.openAccountMenu();
 
         const accountListPage = new AccountListPage(driver);
-        await accountListPage.checkPageIsLoaded();
+        await accountListPage.checkPageIsLoaded({
+          isMultichainAccountsState2Enabled: true,
+        });
 
         // Verify default account is visible
         await accountListPage.checkAccountDisplayedInAccountList(
@@ -131,7 +133,9 @@ describe('Account syncing - Adding and Renaming Accounts', function () {
         await header.openAccountMenu();
 
         const accountListPage = new AccountListPage(driver);
-        await accountListPage.checkPageIsLoaded();
+        await accountListPage.checkPageIsLoaded({
+          isMultichainAccountsState2Enabled: true,
+        });
 
         // Verify both accounts from previous phase are still visible
         await accountListPage.checkAccountDisplayedInAccountList(
@@ -205,7 +209,9 @@ describe('Account syncing - Adding and Renaming Accounts', function () {
         await header.openAccountMenu();
 
         const accountListPage = new AccountListPage(driver);
-        await accountListPage.checkPageIsLoaded();
+        await accountListPage.checkPageIsLoaded({
+          isMultichainAccountsState2Enabled: true,
+        });
 
         // Verify all accounts and renames are properly synced
         await accountListPage.checkAccountDisplayedInAccountList(

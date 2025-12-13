@@ -1,6 +1,6 @@
 import { act } from '@testing-library/react-hooks';
 import { waitFor } from '@testing-library/react';
-import { renderHookWithProvider } from '../../../test/lib/render-helpers-navigate';
+import { renderHookWithProvider } from '../../../test/lib/render-helpers';
 import {
   SeasonDtoState,
   SeasonStatusState,

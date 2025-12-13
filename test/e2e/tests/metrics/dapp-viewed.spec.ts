@@ -85,7 +85,7 @@ describe('Dapp viewed Event', function () {
         dappOptions: { numberOfTestDapps: 1 },
         fixtures: new FixtureBuilder()
           .withMetaMetricsController({
-            metaMetricsId: null,
+            metaMetricsId: 'invalid-metrics-id',
             participateInMetaMetrics: true,
           })
           .build(),
