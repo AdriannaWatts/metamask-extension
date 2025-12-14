@@ -21,9 +21,9 @@ import OnboardingMetametrics from './metametrics';
 
 const mockUseNavigate = jest.fn();
 
-jest.mock('react-router-dom', () => {
+jest.mock('react-router-dom-v5-compat', () => {
   return {
-    ...jest.requireActual('react-router-dom'),
+    ...jest.requireActual('react-router-dom-v5-compat'),
     useNavigate: () => mockUseNavigate,
     useLocation: jest.fn(() => ({ search: '' })),
   };

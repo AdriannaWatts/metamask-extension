@@ -1,4 +1,5 @@
 import { strict as assert } from 'assert';
+import { MockttpServer } from 'mockttp';
 import { CHAIN_IDS } from '@metamask/transaction-controller';
 import { createDownloadFolder, withFixtures } from '../../helpers';
 import { Driver } from '../../webdriver/driver';
@@ -6,11 +7,8 @@ import FixtureBuilder from '../../fixtures/fixture-builder';
 import SettingsPage from '../../page-objects/pages/settings/settings-page';
 import HeaderNavbar from '../../page-objects/pages/header-navbar';
 import AdvancedSettings from '../../page-objects/pages/settings/advanced-settings';
-import {
-  loginWithBalanceValidation,
-  loginWithoutBalanceValidation,
-} from '../../page-objects/flows/login.flow';
-import { mockPriceApi } from '../tokens/utils/mocks';
+import { loginWithBalanceValidation } from '../../page-objects/flows/login.flow';
+import { mockSpotPrices } from '../tokens/utils/mocks';
 
 import referenceStateLogsDefinition from './state-logs.json';
 import {
@@ -39,14 +37,31 @@ describe('State logs', function () {
               showNativeTokenAsMainBalance: false,
             },
           })
-          .withEnabledNetworks({
-            eip155: {
-              [CHAIN_IDS.MAINNET]: true,
-            },
-          })
           .build(),
         title: this.test?.fullTitle(),
-        testSpecificMock: mockPriceApi,
+        testSpecificMock: async (mockServer: MockttpServer) => {
+          await mockServer
+            .forGet('https://price.api.cx.metamask.io/v1/exchange-rates')
+            .withQuery({ baseCurrency: 'usd' })
+            .thenCallback(() => ({
+              statusCode: 200,
+              json: {
+                eth: {
+                  name: 'Ethereum',
+                  ticker: 'eth',
+                  value: 1,
+                  currencyType: 'fiat',
+                },
+              },
+            }));
+          await mockSpotPrices(mockServer, CHAIN_IDS.MAINNET, {
+            '0x0000000000000000000000000000000000000000': {
+              price: 3401,
+              marketCap: 382623505141,
+              pricePercentChange1d: 0,
+            },
+          });
+        },
       },
       async ({ driver }: { driver: Driver }) => {
         await createDownloadFolder(downloadsFolder);
@@ -96,14 +111,36 @@ describe('State logs', function () {
           })
           .build(),
         title: this.test?.fullTitle(),
-        testSpecificMock: mockPriceApi,
+        testSpecificMock: async (mockServer: MockttpServer) => {
+          await mockSpotPrices(mockServer, CHAIN_IDS.MAINNET, {
+            '0x0000000000000000000000000000000000000000': {
+              price: 3401,
+              marketCap: 382623505141,
+              pricePercentChange1d: 0,
+            },
+          });
+          await mockServer
+            .forGet('https://price.api.cx.metamask.io/v1/exchange-rates')
+            .withQuery({ baseCurrency: 'usd' })
+            .thenCallback(() => ({
+              statusCode: 200,
+              json: {
+                eth: {
+                  name: 'Ethereum',
+                  ticker: 'eth',
+                  value: 1,
+                  currencyType: 'fiat',
+                  usd: 1,
+                },
+              },
+            }));
+        },
       },
       async ({ driver }: { driver: Driver }) => {
         await createDownloadFolder(downloadsFolder);
-        await loginWithoutBalanceValidation(driver);
+        await loginWithBalanceValidation(driver);
 
-        // Add hardcoded delay to stabilize the test and ensure values for properties are loaded
-        await driver.delay(15000);
+        await driver.delay(10000);
 
         // Download state logs
         await new HeaderNavbar(driver).openSettingsPage();
@@ -112,37 +149,17 @@ describe('State logs', function () {
         await settingsPage.clickAdvancedTab();
         const advancedSettingsPage = new AdvancedSettings(driver);
         await advancedSettingsPage.checkPageIsLoaded();
+        // Add hardcoded delay to stabilize the test and ensure values for properties are loaded
+        await driver.delay(15000);
         await advancedSettingsPage.downloadStateLogs();
 
         // Verify download and get state logs
         const stateLogs = await getDownloadedStateLogs(driver, downloadsFolder);
 
-        // Get new account ID for Solana
-        const newAccountId = Object.keys(
-          stateLogs.metamask.internalAccounts.accounts,
-        )[1];
-
-        // Get new sync Queue Entropy
-        const syncQueueEntropy = Object.keys(stateLogs.metamask.syncQueue)[1];
-
-        let referenceLogsText = JSON.stringify(referenceStateLogsDefinition);
-
-        // Replace ID in reference logs
-        referenceLogsText = referenceLogsText.replaceAll(
-          '3c62fe60-6f00-4227-86f4-33d0b1f4c39e',
-          newAccountId,
-        );
-        // Replace Queue Entropy in reference logs
-        referenceLogsText = referenceLogsText.replaceAll(
-          '01KBPCGKC0N982CH1VYK4WJ5BH',
-          syncQueueEntropy,
-        );
-        const referenceLogs = JSON.parse(referenceLogsText);
-
         // Create type maps for comparison
         const currentTypeMap = createTypeMap(stateLogs);
         const expectedTypeMap: StateLogsTypeMap = createTypeMapFromDefinition(
-          referenceLogs as StateLogsTypeDefinition,
+          referenceStateLogsDefinition as StateLogsTypeDefinition,
         );
 
         console.log('📋 Created type maps for comparison');

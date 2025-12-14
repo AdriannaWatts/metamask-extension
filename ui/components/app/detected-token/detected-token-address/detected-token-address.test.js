@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { renderWithProvider } from '../../../../../test/lib/render-helpers-navigate';
+import { renderWithProvider, screen } from '../../../../../test/jest';
 import configureStore from '../../../../store/store';
 
 import DetectedTokenAddress from './detected-token-address';
@@ -11,12 +11,9 @@ describe('DetectedTokenAddress', () => {
 
   it('should render the detected token address', async () => {
     const store = configureStore({});
-    const { getByText } = renderWithProvider(
-      <DetectedTokenAddress {...args} />,
-      store,
-    );
+    renderWithProvider(<DetectedTokenAddress {...args} />, store);
 
-    expect(getByText('Token address:')).toBeInTheDocument();
-    expect(getByText('0xc011a...f2a6f')).toBeInTheDocument();
+    expect(screen.getByText('Token address:')).toBeInTheDocument();
+    expect(screen.getByText('0xc011a...f2a6f')).toBeInTheDocument();
   });
 });
