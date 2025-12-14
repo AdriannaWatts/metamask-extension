@@ -64,13 +64,6 @@ describe('MetaMask onboarding ', function () {
       {
         fixtures: new FixtureBuilder({ onboarding: true })
           .withNetworkControllerOnMainnet()
-          .withPreferencesControllerShowNativeTokenAsMainBalanceEnabled()
-          .withEnabledNetworks({
-            eip155: {
-              '0x1': true,
-            },
-          })
-
           .build(),
         title: this.test?.fullTitle(),
         testSpecificMock: mockApis,
@@ -102,6 +95,8 @@ describe('MetaMask onboarding ', function () {
         await homePage.checkExpectedBalanceIsDisplayed();
         await homePage.refreshErc20TokenList();
         await homePage.checkPageIsLoaded();
+        await homePage.headerNavbar.openAccountMenu();
+        await new AccountList(driver).checkPageIsLoaded();
 
         for (const m of mockedEndpoint) {
           const requests = await m.getSeenRequests();
@@ -119,7 +114,6 @@ describe('MetaMask onboarding ', function () {
       {
         fixtures: new FixtureBuilder({ onboarding: true })
           .withNetworkControllerOnMainnet()
-          .withPreferencesControllerShowNativeTokenAsMainBalanceEnabled()
           .withEnabledNetworks({
             eip155: {
               '0x1': true,
@@ -135,7 +129,7 @@ describe('MetaMask onboarding ', function () {
         // Refresh tokens before asserting to mitigate flakiness
         const homePage = new HomePage(driver);
         await homePage.checkPageIsLoaded();
-        await homePage.checkExpectedBalanceIsDisplayed('25', 'ETH');
+        await homePage.checkExpectedBalanceIsDisplayed('42,500.00', '$');
         await homePage.refreshErc20TokenList();
         await homePage.checkPageIsLoaded();
         await homePage.headerNavbar.openAccountMenu();

@@ -10,6 +10,7 @@ import ActivityListPage from '../../page-objects/pages/home/activity-list';
 import AssetListPage from '../../page-objects/pages/home/asset-list';
 import NFTDetailsPage from '../../page-objects/pages/nft-details-page';
 import HeaderNavbar from '../../page-objects/pages/header-navbar';
+import { ACCOUNT_TYPE } from '../../constants';
 import NftListPage from '../../page-objects/pages/home/nft-list';
 
 describe('Change assets', function () {
@@ -26,6 +27,7 @@ describe('Change assets', function () {
         await loginWithBalanceValidation(driver, localNodes[0]);
 
         const homePage = new HomePage(driver);
+        const accountListPage = new AccountListPage(driver);
         const sendTokenPage = new SendTokenPage(driver);
         const sendTokenConfirmationPage = new SendTokenConfirmPage(driver);
         const activityListPage = new ActivityListPage(driver);
@@ -34,7 +36,8 @@ describe('Change assets', function () {
         await homePage.startSendFlow();
 
         await sendTokenPage.checkPageIsLoaded();
-        await sendTokenPage.clickOnAccountSelector('Account 1');
+        await accountListPage.selectAccount('Account 1');
+
         await sendTokenPage.fillAmount('2');
         await sendTokenPage.clickContinueButton();
         await sendTokenPage.goToPreviousScreen();
@@ -65,29 +68,29 @@ describe('Change assets', function () {
     await withFixtures(
       {
         dappOptions: { numberOfTestDapps: 1 },
-        fixtures: new FixtureBuilder().withNftControllerERC721().build(),
+        fixtures: new FixtureBuilder()
+          .withTokensControllerERC20()
+          .withNftControllerERC721()
+          .build(),
         smartContract: [smartContract, tokenContract],
         title: this.test?.fullTitle(),
       },
-      async ({ driver, localNodes, contractRegistry }) => {
+      async ({ driver, localNodes }) => {
         await loginWithBalanceValidation(driver, localNodes[0]);
 
         const homePage = new HomePage(driver);
+        const accountListPage = new AccountListPage(driver);
         const sendTokenPage = new SendTokenPage(driver);
         const sendTokenConfirmationPage = new SendTokenConfirmPage(driver);
         const activityListPage = new ActivityListPage(driver);
         const assetListPage = new AssetListPage(driver);
 
         await homePage.checkPageIsLoaded();
-        // Importing token manually until we update the fixture with the new state
-        const tokenAddress =
-          await contractRegistry.getContractAddress(tokenContract);
-        await assetListPage.importCustomTokenByChain('0x539', tokenAddress);
         await assetListPage.clickOnAsset('TST');
         await homePage.startSendFlow();
 
         await sendTokenPage.checkPageIsLoaded();
-        await sendTokenPage.clickOnAccountSelector('Account 1');
+        await accountListPage.selectAccount('Account 1');
         await sendTokenPage.fillAmount('2');
         await sendTokenPage.clickContinueButton();
         await sendTokenPage.goToPreviousScreen();
@@ -126,6 +129,7 @@ describe('Change assets', function () {
 
         const homePage = new HomePage(driver);
         const nftDetailsPage = new NFTDetailsPage(driver);
+        const accountListPage = new AccountListPage(driver);
         const sendTokenPage = new SendTokenPage(driver);
         const sendTokenConfirmationPage = new SendTokenConfirmPage(driver);
         const activityListPage = new ActivityListPage(driver);
@@ -137,7 +141,7 @@ describe('Change assets', function () {
         await nftDetailsPage.checkPageIsLoaded();
         await nftDetailsPage.clickNFTSendButton();
         await sendTokenPage.checkPageIsLoaded();
-        await sendTokenPage.clickOnAccountSelector('Account 1');
+        await accountListPage.selectAccount('Account 1');
         await sendTokenPage.checkTokenSymbolInAssetPicker('TDN', '1');
         await sendTokenPage.clickContinueButton();
         await sendTokenPage.goToPreviousScreen();
@@ -197,13 +201,10 @@ describe('Change assets', function () {
         // Create new account with default name `newAccountName`
         const newAccountName = 'Account 2';
         await accountListPage.checkPageIsLoaded();
-        // Create second account with sync enabled - this should sync to user storage
-        await accountListPage.addMultichainAccount();
-
-        await accountListPage.checkAccountDisplayedInAccountList(
-          newAccountName,
-        );
-        await accountListPage.closeMultichainAccountsPage();
+        await accountListPage.addAccount({
+          accountType: ACCOUNT_TYPE.Ethereum,
+        });
+        await headerNavbar.checkAccountLabel(newAccountName);
 
         // Switch back to the first account
         await headerNavbar.openAccountMenu();
@@ -219,13 +220,13 @@ describe('Change assets', function () {
 
         // Switch accounts during send flow and check that native currency is selected
         await sendTokenPage.checkPageIsLoaded();
-        await sendTokenPage.clickOnAccountSelector('Account 1');
+        await accountListPage.selectAccount('Account 1');
         await sendTokenPage.checkTokenSymbolInAssetPicker('TDN', '1');
         await sendTokenPage.clickAccountPickerButton();
-        await sendTokenPage.selectAccount('Account 2');
+        await accountListPage.selectAccount('Account 2');
         await sendTokenPage.checkTokenSymbolInAssetPicker('ETH');
         await sendTokenPage.clickAccountPickerButton();
-        await sendTokenPage.selectAccount('Account 1');
+        await accountListPage.selectAccount('Account 1');
         await sendTokenPage.checkTokenSymbolInAssetPicker('ETH');
         await sendTokenPage.fillAmount('2');
 

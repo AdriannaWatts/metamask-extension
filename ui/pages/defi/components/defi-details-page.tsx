@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import { Navigate } from 'react-router-dom-v5-compat';
 import { useSelector } from 'react-redux';
 import {
   Display,
@@ -45,10 +45,14 @@ const useExtractUnderlyingTokens = (
     );
   }, [positions]);
 
-const DeFiPage = () => {
+type DeFiPageProps = {
+  navigate: (to: string | number) => void;
+  params: { chainId: string; protocolId: string };
+};
+
+const DeFiPage = ({ navigate, params }: DeFiPageProps) => {
   const { formatCurrencyWithMinThreshold } = useFormatters();
-  const { chainId, protocolId } = useParams();
-  const navigate = useNavigate();
+  const { chainId, protocolId } = params;
   const defiPositions = useSelector(getDefiPositions);
   const selectedAccount = useSelector(getSelectedAccount);
 
@@ -57,11 +61,9 @@ const DeFiPage = () => {
 
   // TODO: Get value in user's preferred currency
   const protocolPosition =
-    chainId && protocolId
-      ? defiPositions[selectedAccount.address]?.[
-          chainId as keyof (typeof defiPositions)[string]
-        ]?.protocols[protocolId]
-      : undefined;
+    defiPositions[selectedAccount.address]?.[
+      chainId as keyof (typeof defiPositions)[string]
+    ]?.protocols[protocolId];
 
   const extractedTokens = useMemo(() => {
     return Object.keys(protocolPosition?.positionTypes || {}).reduce(
