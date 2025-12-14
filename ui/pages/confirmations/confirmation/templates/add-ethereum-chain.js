@@ -228,7 +228,7 @@ function getState(pendingApproval) {
   return {};
 }
 
-function getValues(pendingApproval, t, actions, navigate, data) {
+function getValues(pendingApproval, t, actions, history, data) {
   const originIsMetaMask = pendingApproval.origin === 'metamask';
   const customRpcUrl = pendingApproval.requestData.rpcUrl;
 
@@ -409,7 +409,7 @@ function getValues(pendingApproval, t, actions, navigate, data) {
           locationPath === ONBOARDING_PRIVACY_SETTINGS_ROUTE;
 
         if (!isOnboardingRoute) {
-          navigate(DEFAULT_ROUTE);
+          history.push(DEFAULT_ROUTE);
         }
       }
       return [];

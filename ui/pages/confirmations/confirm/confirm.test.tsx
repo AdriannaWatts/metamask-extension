@@ -35,8 +35,8 @@ jest.mock('../hooks/gas/useIsGaslessLoading', () => ({
 }));
 
 const mockUseNavigate = jest.fn();
-jest.mock('react-router-dom', () => {
-  const actual = jest.requireActual('react-router-dom');
+jest.mock('react-router-dom-v5-compat', () => {
+  const actual = jest.requireActual('react-router-dom-v5-compat');
   return {
     ...actual,
     useNavigate: () => mockUseNavigate,

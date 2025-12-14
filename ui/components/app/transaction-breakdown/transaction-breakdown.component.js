@@ -34,7 +34,6 @@ export default class TransactionBreakdown extends PureComponent {
     sourceAmountFormatted: PropTypes.string,
     destinationAmountFormatted: PropTypes.string,
     gasPaidByAddress: PropTypes.string,
-    chainId: PropTypes.string,
   };
 
   static defaultProps = {
@@ -63,7 +62,6 @@ export default class TransactionBreakdown extends PureComponent {
       sourceAmountFormatted,
       destinationAmountFormatted,
       gasPaidByAddress,
-      chainId,
     } = this.props;
     return (
       <div className={classnames('transaction-breakdown', className)}>
@@ -260,14 +258,12 @@ export default class TransactionBreakdown extends PureComponent {
             type={PRIMARY}
             value={totalInHex}
             numberOfDecimals={l1HexGasTotal ? 18 : null}
-            chainId={chainId}
           />
           {showFiat && (
             <UserPreferencedCurrencyDisplay
               className="transaction-breakdown__value"
               type={SECONDARY}
               value={totalInHex}
-              chainId={chainId}
             />
           )}
         </TransactionBreakdownRow>

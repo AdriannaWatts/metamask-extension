@@ -1,7 +1,6 @@
 import { strict as assert } from 'assert';
 import { Mockttp } from 'mockttp';
 import { getEventPayloads, withFixtures } from '../../helpers';
-import { MOCK_META_METRICS_ID } from '../../constants';
 import FixtureBuilder from '../../fixtures/fixture-builder';
 import TestDapp from '../../page-objects/pages/test-dapp';
 import { loginWithBalanceValidation } from '../../page-objects/flows/login.flow';
@@ -34,7 +33,7 @@ describe('App Opened metric', function () {
       {
         fixtures: new FixtureBuilder()
           .withMetaMetricsController({
-            metaMetricsId: MOCK_META_METRICS_ID,
+            metaMetricsId: 'fake-metrics-fd20',
             participateInMetaMetrics: true,
           })
           .build(),
@@ -56,7 +55,7 @@ describe('App Opened metric', function () {
       {
         fixtures: new FixtureBuilder()
           .withMetaMetricsController({
-            metaMetricsId: MOCK_META_METRICS_ID,
+            metaMetricsId: 'fake-metrics-fd20',
             participateInMetaMetrics: false,
           })
           .build(),
@@ -79,7 +78,7 @@ describe('App Opened metric', function () {
         fixtures: new FixtureBuilder()
           .withPermissionControllerConnectedToTestDapp()
           .withMetaMetricsController({
-            metaMetricsId: MOCK_META_METRICS_ID,
+            metaMetricsId: 'fake-metrics-fd20',
             participateInMetaMetrics: true,
           })
           .build(),

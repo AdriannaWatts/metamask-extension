@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { useSelector } from 'react-redux';
-import { useParams, useLocation, useNavigate } from 'react-router-dom';
+import type { Location as RouterLocation } from 'react-router-dom-v5-compat';
 import {
   TransactionStatus,
   TransactionType,
@@ -74,15 +74,26 @@ import TransactionDetailRow from './transaction-detail-row';
 import BridgeExplorerLinks from './bridge-explorer-links';
 import BridgeStepList from './bridge-step-list';
 
-const CrossChainSwapTxDetails = () => {
+type CrossChainSwapTxDetailsProps = {
+  location?: RouterLocation;
+  navigate?: (
+    path: string | number,
+    options?: { replace?: boolean; state?: Record<string, unknown> },
+  ) => void;
+  params?: { srcTxMetaId: string };
+};
+
+const CrossChainSwapTxDetails = ({
+  location,
+  navigate,
+  params,
+}: CrossChainSwapTxDetailsProps) => {
   const t = useI18nContext();
   const locale = useSelector(getIntlLocale);
   const trackEvent = useContext(MetaMetricsContext);
   const rootState = useSelector((state) => state);
 
-  const { srcTxMetaId } = useParams<{ srcTxMetaId: string }>();
-  const location = useLocation();
-  const navigate = useNavigate();
+  const srcTxMetaId = params?.srcTxMetaId;
   const allTransactions = useSelector(
     getAllNetworkTransactions,
   ) as TransactionMeta[];

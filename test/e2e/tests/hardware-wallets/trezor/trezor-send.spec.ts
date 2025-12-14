@@ -39,9 +39,9 @@ describe('Trezor Hardware', function (this: Suite) {
           )) ?? console.error('localNodes is undefined or empty');
           await loginWithBalanceValidation(
             driver,
+            localNodes?.[0],
             undefined,
-            undefined,
-            `1.21M`,
+            '1208925.8196',
           );
           const homePage = new HomePage(driver);
           await sendRedesignedTransactionToAddress({

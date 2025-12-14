@@ -18,7 +18,6 @@ import {
 } from '../../../../shared/modules/dapp-swap-comparison/dapp-swap-comparison-utils';
 import { DappSwapComparisonData } from '../../controllers/app-state-controller';
 import { SecurityAlertResponse } from '../ppom/types';
-import { DappSwapDecodingError } from '../../../../shared/modules/dapp-swap-comparison/dapp-swap-command-utils';
 
 export type DappSwapMiddlewareRequest<
   Params extends JsonRpcParams = JsonRpcParams,
@@ -158,8 +157,10 @@ export function getQuotesForConfirmation({
         commands,
       });
     }
-    if (!(error instanceof DappSwapDecodingError)) {
-      captureException(error);
-    }
+    // The error capturing to be uncommented as we address this issue:
+    // https://github.com/MetaMask/MetaMask-planning/issues/6387
+    // captureException(
+    //   `Error fetching bridge quotes: ${(error as Error).toString()}`,
+    // );
   }
 }
