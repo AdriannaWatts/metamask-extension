@@ -1,6 +1,5 @@
-import React, { FormEvent, useCallback, useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import React, { FormEvent, useCallback, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom-v5-compat';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import {
   Text,
@@ -29,14 +28,9 @@ import {
 import { getSeedPhrase } from '../../../store/actions';
 import {
   DEFAULT_ROUTE,
-  ONBOARDING_COMPLETION_ROUTE,
-  ONBOARDING_METAMETRICS,
   ONBOARDING_REVIEW_SRP_ROUTE,
   REVEAL_SRP_LIST_ROUTE,
 } from '../../../helpers/constants/routes';
-import { getSeedPhraseBackedUp } from '../../../ducks/metamask/metamask';
-import { getBrowserName } from '../../../../shared/modules/browser-runtime.utils';
-import { PLATFORM_FIREFOX } from '../../../../shared/constants/app';
 
 // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -51,7 +45,6 @@ export default function RevealRecoveryPhrase({
   const searchParams = new URLSearchParams(search);
   const isFromReminder = searchParams.get('isFromReminder');
   const isFromSettingsSecurity = searchParams.get('isFromSettingsSecurity');
-  const hasSeedPhraseBackedUp = useSelector(getSeedPhraseBackedUp);
   const queryParams = new URLSearchParams();
   if (isFromReminder) {
     queryParams.set('isFromReminder', isFromReminder);
@@ -64,16 +57,6 @@ export default function RevealRecoveryPhrase({
   const [password, setPassword] = useState('');
   const [isIncorrectPasswordError, setIsIncorrectPasswordError] =
     useState(false);
-
-  useEffect(() => {
-    if (hasSeedPhraseBackedUp) {
-      const isFirefox = getBrowserName() === PLATFORM_FIREFOX;
-      navigate(
-        isFirefox ? ONBOARDING_COMPLETION_ROUTE : ONBOARDING_METAMETRICS,
-        { replace: true },
-      );
-    }
-  }, [navigate, hasSeedPhraseBackedUp]);
 
   const onSubmit = useCallback(
     async (_password) => {

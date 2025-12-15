@@ -54,7 +54,7 @@ describe(`migration #${version}`, () => {
       expect(newStorage.data).toStrictEqual(oldStorage.data);
     });
 
-    it('returns the original state if TokenBalancesController is missing', async () => {
+    it('logs an error and returns the original state if TokenBalancesController is missing', async () => {
       const oldStorage = {
         meta: { version: oldVersion },
         data: {
@@ -65,6 +65,9 @@ describe(`migration #${version}`, () => {
 
       const newStorage = await migrate(oldStorage);
 
+      expect(global.sentry.captureException).toHaveBeenCalledWith(
+        new Error(`Migration ${version}: TokenBalancesController not found.`),
+      );
       expect(newStorage.data).toStrictEqual(oldStorage.data);
     });
 

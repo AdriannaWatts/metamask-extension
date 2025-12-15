@@ -148,7 +148,6 @@ export const SiteCellTooltip = ({ accounts, networks }) => {
           members={avatarAccountsData}
           limit={AVATAR_GROUP_LIMIT}
           avatarType={AvatarType.ACCOUNT}
-          variant={avatarAccountVariant}
           borderColor={BackgroundColor.backgroundDefault}
         />
       )}

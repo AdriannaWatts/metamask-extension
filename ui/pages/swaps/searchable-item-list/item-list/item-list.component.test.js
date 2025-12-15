@@ -1,8 +1,11 @@
 import React from 'react';
 import configureMockStore from 'redux-mock-store';
 
-import { createSwapsMockStore, fireEvent } from '../../../../../test/jest';
-import { renderWithProvider } from '../../../../../test/lib/render-helpers-navigate';
+import {
+  renderWithProvider,
+  createSwapsMockStore,
+  fireEvent,
+} from '../../../../../test/jest';
 import ItemList from '.';
 
 const createProps = (customProps = {}) => {

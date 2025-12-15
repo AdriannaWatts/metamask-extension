@@ -29,7 +29,9 @@ const usePolling = <PollingInput>(
 
   useEffect(() => {
     if (usePollingOptions.enabled === false || !hasPollingInputChanged) {
-      return;
+      return () => {
+        // noop
+      };
     }
 
     const cleanup = () => {

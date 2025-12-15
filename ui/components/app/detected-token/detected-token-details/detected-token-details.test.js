@@ -1,6 +1,9 @@
 import * as React from 'react';
-import { renderWithProvider } from '../../../../../test/lib/render-helpers-navigate';
-import { fireEvent } from '../../../../../test/jest';
+import {
+  renderWithProvider,
+  screen,
+  fireEvent,
+} from '../../../../../test/jest';
 import configureStore from '../../../../store/store';
 import testData from '../../../../../.storybook/test-data';
 
@@ -72,21 +75,18 @@ describe('DetectedTokenDetails', () => {
 
   it('should render the detected token details', async () => {
     const store = configureStore(testData);
-    const { getByText } = renderWithProvider(
-      <DetectedTokenDetails {...args} />,
-      store,
-    );
+    renderWithProvider(<DetectedTokenDetails {...args} />, store);
 
-    expect(getByText('0 SNX')).toBeInTheDocument();
-    expect(getByText('$0')).toBeInTheDocument();
-    expect(getByText('Token address:')).toBeInTheDocument();
-    expect(getByText('0xc011a...f2a6f')).toBeInTheDocument();
-    expect(getByText('From token lists:')).toBeInTheDocument();
-    expect(getByText('Aave, Bancor')).toBeInTheDocument();
-    expect(getByText('+ 10 more')).toBeInTheDocument();
-    fireEvent.click(getByText('+ 10 more'));
+    expect(screen.getByText('0 SNX')).toBeInTheDocument();
+    expect(screen.getByText('$0')).toBeInTheDocument();
+    expect(screen.getByText('Token address:')).toBeInTheDocument();
+    expect(screen.getByText('0xc011a...f2a6f')).toBeInTheDocument();
+    expect(screen.getByText('From token lists:')).toBeInTheDocument();
+    expect(screen.getByText('Aave, Bancor')).toBeInTheDocument();
+    expect(screen.getByText('+ 10 more')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('+ 10 more'));
     expect(
-      getByText(
+      screen.getByText(
         'Aave, Bancor, CMC, Crypto.com, CoinGecko, 1inch, Paraswap, PMM, Synthetix, Zapper, Zerion, 0x.',
       ),
     ).toBeInTheDocument();
