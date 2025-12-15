@@ -3,7 +3,7 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { fireEvent, waitFor } from '@testing-library/react';
 import { SubscriptionUserEvent } from '@metamask/subscription-controller';
-import { renderWithProvider } from '../../../../test/lib/render-helpers-navigate';
+import { renderWithProvider } from '../../../../test/jest/rendering';
 import * as actions from '../../../store/actions';
 import { SHIELD_PLAN_ROUTE } from '../../../helpers/constants/routes';
 import MockState from '../../../../test/data/mock-state.json';
@@ -11,9 +11,9 @@ import ShieldEntryModal from './shield-entry-modal';
 
 const mockUseNavigate = jest.fn();
 const mockUseLocation = jest.fn();
-jest.mock('react-router-dom', () => {
+jest.mock('react-router-dom-v5-compat', () => {
   return {
-    ...jest.requireActual('react-router-dom'),
+    ...jest.requireActual('react-router-dom-v5-compat'),
     useNavigate: () => mockUseNavigate,
     useLocation: () => mockUseLocation(),
   };

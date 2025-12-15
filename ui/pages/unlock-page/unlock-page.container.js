@@ -1,4 +1,6 @@
 import { connect } from 'react-redux';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { compose } from 'redux';
 // TODO: Remove restricted import
 // eslint-disable-next-line import/no-restricted-paths
@@ -20,6 +22,7 @@ import {
 import { getIsSocialLoginFlow, getFirstTimeFlowType } from '../../selectors';
 import { getCompletedOnboarding } from '../../ducks/metamask/metamask';
 import withRouterHooks from '../../helpers/higher-order-components/with-router-hooks/with-router-hooks';
+import { useNavState } from '../../contexts/navigation-state';
 import UnlockPage from './unlock-page.component';
 
 const mapStateToProps = (state) => {
@@ -58,6 +61,7 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
     navigate,
     onSubmit: ownPropsSubmit,
     location,
+    navState,
     ...restOwnProps
   } = ownProps;
 
@@ -76,7 +80,8 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
     await propsTryUnlockMetamask(password);
     // Redirect to the intended route if available, otherwise DEFAULT_ROUTE
     let redirectTo = DEFAULT_ROUTE;
-    const fromLocation = location.state?.from;
+    // Read from both v5 location.state and v5-compat navState
+    const fromLocation = location.state?.from || navState?.from;
     if (fromLocation?.pathname) {
       const search = fromLocation.search || '';
       redirectTo = fromLocation.pathname + search;
@@ -92,6 +97,7 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
     onSubmit: ownPropsSubmit || onSubmit,
     navigate,
     location,
+    navState,
     isPopup,
   };
 };
@@ -101,4 +107,26 @@ const UnlockPageConnected = compose(
   connect(mapStateToProps, mapDispatchToProps, mergeProps),
 )(UnlockPage);
 
-export default UnlockPageConnected;
+/**
+ * Inject navState from NavigationStateContext for v5-compat navigation.
+ * This wrapper ensures the unlock page can read navigation state from both
+ * v5 location.state and v5-compat NavigationStateContext.
+ *
+ * @param {object} props - Component props (navigate, location from route)
+ * @returns {React.ReactElement} UnlockPage with navState injected
+ */
+const UnlockPageWithNavState = (props) => {
+  const navState = useNavState();
+  return <UnlockPageConnected {...props} navState={navState} />;
+};
+
+UnlockPageWithNavState.propTypes = {
+  navigate: PropTypes.func.isRequired,
+  location: PropTypes.object.isRequired,
+  onSubmit: PropTypes.func,
+};
+
+// Export the connected component for Storybook/testing
+export { UnlockPageConnected };
+
+export default UnlockPageWithNavState;

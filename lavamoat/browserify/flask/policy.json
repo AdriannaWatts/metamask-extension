@@ -10,11 +10,6 @@
         "SuppressedError": true
       }
     },
-    "@date-io/luxon": {
-      "packages": {
-        "luxon": true
-      }
-    },
     "@ensdomains/content-hash": {
       "globals": {
         "console.warn": true
@@ -684,7 +679,6 @@
         "getSelection": true,
         "performance.now": true,
         "removeEventListener": true,
-        "requestAnimationFrame": true,
         "setInterval": true,
         "setTimeout": true
       },
@@ -698,26 +692,8 @@
         "prop-types": true,
         "react": true,
         "react-dom": true,
-        "react-redux>react-is": true,
+        "@material-ui/core>react-is": true,
         "react-transition-group": true
-      }
-    },
-    "@material-ui/pickers": {
-      "globals": {
-        "addEventListener": true,
-        "innerHeight": true,
-        "orientation": true,
-        "removeEventListener": true,
-        "screen": true
-      },
-      "packages": {
-        "@babel/runtime": true,
-        "@material-ui/core": true,
-        "@material-ui/pickers>clsx": true,
-        "prop-types": true,
-        "react": true,
-        "react-transition-group": true,
-        "@material-ui/pickers>rifm": true
       }
     },
     "@material-ui/core>@material-ui/styles": {
@@ -759,7 +735,7 @@
       "packages": {
         "@babel/runtime": true,
         "prop-types": true,
-        "react-redux>react-is": true
+        "@material-ui/core>@material-ui/utils>react-is": true
       }
     },
     "@metamask/abi-utils": {
@@ -939,35 +915,6 @@
         "@metamask/superstruct": true,
         "@metamask/utils": true,
         "@metamask/bridge-controller>bignumber.js": true,
-        "browserify>buffer": true,
-        "lodash": true,
-        "reselect": true,
-        "uuid": true
-      }
-    },
-    "@metamask/transaction-pay-controller>@metamask/bridge-controller": {
-      "globals": {
-        "AbortController": true,
-        "TextDecoder": true,
-        "URLSearchParams": true,
-        "console.error": true,
-        "console.log": true,
-        "console.warn": true
-      },
-      "packages": {
-        "ethers>@ethersproject/address": true,
-        "ethers>@ethersproject/constants": true,
-        "@ethersproject/contracts": true,
-        "@ethersproject/providers": true,
-        "@metamask/controller-utils": true,
-        "@metamask/keyring-api": true,
-        "@metamask/metamask-eth-abis": true,
-        "@metamask/transaction-pay-controller>@metamask/bridge-controller>@metamask/multichain-network-controller": true,
-        "@metamask/transaction-pay-controller>@metamask/bridge-controller>@metamask/polling-controller": true,
-        "@metamask/superstruct": true,
-        "@metamask/transaction-controller": true,
-        "@metamask/utils": true,
-        "@metamask/transaction-pay-controller>bignumber.js": true,
         "browserify>buffer": true,
         "lodash": true,
         "reselect": true,
@@ -1622,19 +1569,6 @@
         "lodash": true
       }
     },
-    "@metamask/transaction-pay-controller>@metamask/bridge-controller>@metamask/multichain-network-controller": {
-      "globals": {
-        "URL": true
-      },
-      "packages": {
-        "@metamask/base-controller": true,
-        "@metamask/keyring-api": true,
-        "@metamask/transaction-pay-controller>@metamask/network-controller": true,
-        "@metamask/superstruct": true,
-        "@metamask/utils": true,
-        "lodash": true
-      }
-    },
     "@metamask/multichain-transactions-controller": {
       "globals": {
         "console.error": true
@@ -1658,33 +1592,6 @@
       }
     },
     "@metamask/network-controller": {
-      "globals": {
-        "Intl.NumberFormat": true,
-        "URL": true,
-        "setTimeout": true
-      },
-      "packages": {
-        "@metamask/base-controller": true,
-        "@metamask/controller-utils": true,
-        "@metamask/network-controller>@metamask/eth-block-tracker": true,
-        "@metamask/network-controller>@metamask/eth-json-rpc-infura": true,
-        "@metamask/eth-json-rpc-middleware": true,
-        "@metamask/eth-json-rpc-provider": true,
-        "@metamask/controller-utils>@metamask/eth-query": true,
-        "@metamask/json-rpc-engine": true,
-        "@metamask/rpc-errors": true,
-        "@metamask/network-controller>@metamask/swappable-obj-proxy": true,
-        "@metamask/utils": true,
-        "addons-linter>deepmerge": true,
-        "eslint>fast-deep-equal": true,
-        "immer": true,
-        "lodash": true,
-        "reselect": true,
-        "uri-js": true,
-        "uuid": true
-      }
-    },
-    "@metamask/transaction-pay-controller>@metamask/network-controller": {
       "globals": {
         "Intl.NumberFormat": true,
         "URL": true,
@@ -1827,18 +1734,6 @@
       }
     },
     "@metamask/bridge-controller>@metamask/polling-controller": {
-      "globals": {
-        "clearTimeout": true,
-        "console.error": true,
-        "setTimeout": true
-      },
-      "packages": {
-        "@metamask/base-controller": true,
-        "@metamask/snaps-utils>fast-json-stable-stringify": true,
-        "uuid": true
-      }
-    },
-    "@metamask/transaction-pay-controller>@metamask/bridge-controller>@metamask/polling-controller": {
       "globals": {
         "clearTimeout": true,
         "console.error": true,
@@ -2023,7 +1918,6 @@
       "packages": {
         "@metamask/base-controller": true,
         "@metamask/controller-utils": true,
-        "@metamask/utils": true,
         "uuid": true
       }
     },
@@ -2135,7 +2029,6 @@
         "@metamask/smart-transactions-controller>@metamask/polling-controller": true,
         "@metamask/transaction-controller": true,
         "@metamask/smart-transactions-controller>bignumber.js": true,
-        "fast-json-patch": true,
         "lodash": true
       }
     },
@@ -2189,9 +2082,6 @@
       }
     },
     "@metamask/snaps-utils>@metamask/snaps-registry": {
-      "globals": {
-        "crypto": true
-      },
       "packages": {
         "@metamask/superstruct": true,
         "@metamask/utils": true,
@@ -2220,8 +2110,7 @@
       "packages": {
         "@metamask/rpc-errors": true,
         "@metamask/superstruct": true,
-        "@metamask/utils": true,
-        "luxon": true
+        "@metamask/utils": true
       }
     },
     "@metamask/snaps-utils": {
@@ -2365,7 +2254,7 @@
       "packages": {
         "@ethersproject/abi": true,
         "@metamask/base-controller": true,
-        "@metamask/transaction-pay-controller>@metamask/bridge-controller": true,
+        "@metamask/bridge-controller": true,
         "@metamask/controller-utils": true,
         "@metamask/metamask-eth-abis": true,
         "@metamask/transaction-controller": true,
@@ -2540,7 +2429,7 @@
         "@reduxjs/toolkit>reselect": true
       }
     },
-    "react-router-dom>@remix-run/router": {
+    "react-router-dom-v5-compat>@remix-run/router": {
       "globals": {
         "AbortController": true,
         "DOMException": true,
@@ -2551,8 +2440,7 @@
         "URL": true,
         "URLSearchParams": true,
         "console": true,
-        "document.defaultView": true,
-        "history": true
+        "document.defaultView": true
       }
     },
     "@rive-app/react-canvas>@rive-app/canvas": {
@@ -3581,7 +3469,7 @@
         "pageYOffset": true
       },
       "packages": {
-        "react-beautiful-dnd>css-box-model>tiny-invariant": true
+        "react-router-dom>tiny-invariant": true
       }
     },
     "@material-ui/core>@material-ui/styles>jss-plugin-vendor-prefixer>css-vendor": {
@@ -4074,6 +3962,31 @@
         "define": true
       }
     },
+    "history": {
+      "globals": {
+        "console": true,
+        "define": true,
+        "document.defaultView": true,
+        "document.querySelector": true
+      }
+    },
+    "react-router-dom>history": {
+      "globals": {
+        "addEventListener": true,
+        "confirm": true,
+        "document": true,
+        "history": true,
+        "location": true,
+        "navigator.userAgent": true,
+        "removeEventListener": true
+      },
+      "packages": {
+        "react-router-dom>history>resolve-pathname": true,
+        "react-router-dom>tiny-invariant": true,
+        "react-router-dom>tiny-warning": true,
+        "react-router-dom>history>value-equal": true
+      }
+    },
     "@toruslabs/eccrypto>elliptic>hmac-drbg": {
       "packages": {
         "ethers>@ethersproject/sha2>hash.js": true,
@@ -4280,13 +4193,13 @@
     "@material-ui/core>@material-ui/styles>jss-plugin-nested": {
       "packages": {
         "@babel/runtime": true,
-        "@material-ui/core>@material-ui/styles>jss>tiny-warning": true
+        "react-router-dom>tiny-warning": true
       }
     },
     "@material-ui/core>@material-ui/styles>jss-plugin-rule-value-function": {
       "packages": {
         "@material-ui/core>@material-ui/styles>jss": true,
-        "@material-ui/core>@material-ui/styles>jss>tiny-warning": true
+        "react-router-dom>tiny-warning": true
       }
     },
     "@material-ui/core>@material-ui/styles>jss-plugin-vendor-prefixer": {
@@ -4304,7 +4217,7 @@
       "packages": {
         "@babel/runtime": true,
         "@material-ui/core>@material-ui/styles>jss>is-in-browser": true,
-        "@material-ui/core>@material-ui/styles>jss>tiny-warning": true
+        "react-router-dom>tiny-warning": true
       }
     },
     "ethereumjs-util>ethereum-cryptography>keccak": {
@@ -4582,6 +4495,11 @@
     "path-browserify": {
       "packages": {
         "process": true
+      }
+    },
+    "serve-handler>path-to-regexp": {
+      "packages": {
+        "serve-handler>path-to-regexp>isarray": true
       }
     },
     "crypto-browserify>pbkdf2": {
@@ -4877,6 +4795,16 @@
         "react": true
       }
     },
+    "@material-ui/core>react-is": {
+      "globals": {
+        "console": true
+      }
+    },
+    "@material-ui/core>@material-ui/utils>react-is": {
+      "globals": {
+        "console": true
+      }
+    },
     "react-redux>hoist-non-react-statics>react-is": {
       "globals": {
         "console": true
@@ -4887,7 +4815,17 @@
         "console": true
       }
     },
+    "react-markdown>react-is": {
+      "globals": {
+        "console": true
+      }
+    },
     "react-redux>react-is": {
+      "globals": {
+        "console": true
+      }
+    },
+    "react-router-dom>react-router>react-is": {
       "globals": {
         "console": true
       }
@@ -4901,7 +4839,7 @@
         "prop-types": true,
         "react-markdown>property-information": true,
         "react": true,
-        "react-redux>react-is": true,
+        "react-markdown>react-is": true,
         "react-markdown>remark-parse": true,
         "react-markdown>remark-rehype": true,
         "react-markdown>space-separated-tokens": true,
@@ -4937,6 +4875,16 @@
       }
     },
     "react-router-dom": {
+      "packages": {
+        "react-router-dom>history": true,
+        "prop-types": true,
+        "react": true,
+        "react-router-dom>react-router": true,
+        "react-router-dom>tiny-invariant": true,
+        "react-router-dom>tiny-warning": true
+      }
+    },
+    "react-router-dom-v5-compat": {
       "globals": {
         "FormData": true,
         "URL": true,
@@ -4946,7 +4894,7 @@
         "confirm": true,
         "define": true,
         "document": true,
-        "history": true,
+        "history.scrollRestoration": true,
         "location.href": true,
         "removeEventListener": true,
         "scrollTo": true,
@@ -4956,20 +4904,33 @@
         "setTimeout": true
       },
       "packages": {
-        "react-router-dom>@remix-run/router": true,
+        "react-router-dom-v5-compat>@remix-run/router": true,
+        "history": true,
         "react": true,
         "react-dom": true,
-        "react-router-dom>react-router": true
+        "react-router-dom": true,
+        "react-router-dom-v5-compat>react-router": true
       }
     },
     "react-router-dom>react-router": {
+      "packages": {
+        "react-router-dom>history": true,
+        "react-redux>hoist-non-react-statics": true,
+        "serve-handler>path-to-regexp": true,
+        "prop-types": true,
+        "react": true,
+        "react-router-dom>react-router>react-is": true,
+        "react-router-dom>tiny-invariant": true,
+        "react-router-dom>tiny-warning": true
+      }
+    },
+    "react-router-dom-v5-compat>react-router": {
       "globals": {
         "console.error": true,
-        "console.warn": true,
         "define": true
       },
       "packages": {
-        "react-router-dom>@remix-run/router": true,
+        "react-router-dom-v5-compat>@remix-run/router": true,
         "react": true
       }
     },
@@ -5264,17 +5225,6 @@
         "browserify>buffer": true
       }
     },
-    "@material-ui/pickers>rifm": {
-      "globals": {
-        "console.error": true,
-        "document.addEventListener": true,
-        "document.removeEventListener": true
-      },
-      "packages": {
-        "@babel/runtime": true,
-        "react": true
-      }
-    },
     "ethereumjs-util>create-hash>ripemd160": {
       "packages": {
         "browserify>buffer": true,
@@ -5533,7 +5483,7 @@
         "process": true
       }
     },
-    "@material-ui/core>@material-ui/styles>jss>tiny-warning": {
+    "react-router-dom>tiny-warning": {
       "globals": {
         "console": true
       }

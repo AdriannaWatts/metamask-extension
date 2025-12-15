@@ -63,14 +63,6 @@ type MinimalStateLogsJson = {
         };
       };
     };
-    syncQueue: {
-      [key: string]: [
-        {
-          address: string;
-          scopes: [];
-        },
-      ];
-    };
   };
   [key: string]: unknown;
 };

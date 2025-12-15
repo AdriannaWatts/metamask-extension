@@ -1,5 +1,12 @@
 import React, { useEffect, useState, useContext, useMemo } from 'react';
-import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import {
+  Routes as Switch,
+  Route,
+  useNavigate,
+  useLocation,
+  type NavigateFunction,
+  type Location as RouterLocation,
+} from 'react-router-dom-v5-compat';
 import { useDispatch, useSelector } from 'react-redux';
 import classnames from 'classnames';
 import Unlock from '../unlock-page';
@@ -13,7 +20,6 @@ import {
   ONBOARDING_UNLOCK_ROUTE,
   ONBOARDING_WELCOME_ROUTE,
   DEFAULT_ROUTE,
-  ONBOARDING_ROUTE,
   ONBOARDING_PRIVACY_SETTINGS_ROUTE,
   ONBOARDING_COMPLETION_ROUTE,
   ONBOARDING_IMPORT_WITH_SRP_ROUTE,
@@ -24,7 +30,6 @@ import {
   ONBOARDING_REVEAL_SRP_ROUTE,
   ONBOARDING_DOWNLOAD_APP_ROUTE,
 } from '../../helpers/constants/routes';
-import { toRelativeRoutePath } from '../routes/utils';
 import {
   getCompletedOnboarding,
   getIsPrimarySeedPhraseBackedUp,
@@ -83,18 +88,27 @@ import AccountNotFound from './account-not-found/account-not-found';
 import RevealRecoveryPhrase from './recovery-phrase/reveal-recovery-phrase';
 import OnboardingDownloadApp from './download-app/download-app';
 
-// Helper to convert onboarding paths to relative paths for nested route matching
-const toRelativePath = (path: string) =>
-  toRelativeRoutePath(path, ONBOARDING_ROUTE);
+type OnboardingFlowProps = {
+  navigate?: NavigateFunction;
+  location?: RouterLocation;
+};
 
+// TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export default function OnboardingFlow() {
+export default function OnboardingFlow({
+  navigate: navigateProp,
+  location: locationProp,
+}: OnboardingFlowProps) {
   const [secretRecoveryPhrase, setSecretRecoveryPhrase] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch<MetaMaskReduxDispatch>();
-  const location = useLocation();
+  const hookLocation = useLocation();
+  const hookNavigate = useNavigate();
+
+  // Use passed props if they exist, otherwise fall back to hooks
+  const location = locationProp ?? hookLocation;
+  const navigate = navigateProp ?? hookNavigate;
   const { pathname, search } = location;
-  const navigate = useNavigate();
   const completedOnboarding: boolean = useSelector(getCompletedOnboarding);
   const openedWithSidepanel = useSelector(getOpenedWithSidepanel);
   const nextRoute = useSelector(getFirstTimeFlowTypeRouteAfterUnlock);
@@ -287,17 +301,14 @@ export default function OnboardingFlow() {
         marginInline="auto"
         borderColor={BorderColor.borderMuted}
       >
-        <Routes>
+        <Switch>
+          <Route path={ONBOARDING_ACCOUNT_EXIST} element={<AccountExist />} />
           <Route
-            path={toRelativePath(ONBOARDING_ACCOUNT_EXIST)}
-            element={<AccountExist />}
-          />
-          <Route
-            path={toRelativePath(ONBOARDING_ACCOUNT_NOT_FOUND)}
+            path={ONBOARDING_ACCOUNT_NOT_FOUND}
             element={<AccountNotFound />}
           />
           <Route
-            path={toRelativePath(ONBOARDING_CREATE_PASSWORD_ROUTE)}
+            path={ONBOARDING_CREATE_PASSWORD_ROUTE}
             element={
               <CreatePassword
                 createNewAccount={handleCreateNewAccount}
@@ -307,7 +318,7 @@ export default function OnboardingFlow() {
             }
           />
           <Route
-            path={toRelativePath(ONBOARDING_REVEAL_SRP_ROUTE)}
+            path={ONBOARDING_REVEAL_SRP_ROUTE}
             element={
               <RevealRecoveryPhrase
                 setSecretRecoveryPhrase={setSecretRecoveryPhrase}
@@ -315,7 +326,7 @@ export default function OnboardingFlow() {
             }
           />
           <Route
-            path={toRelativePath(ONBOARDING_REVIEW_SRP_ROUTE)}
+            path={ONBOARDING_REVIEW_SRP_ROUTE}
             element={
               <ReviewRecoveryPhrase
                 secretRecoveryPhrase={secretRecoveryPhrase}
@@ -323,7 +334,7 @@ export default function OnboardingFlow() {
             }
           />
           <Route
-            path={toRelativePath(ONBOARDING_CONFIRM_SRP_ROUTE)}
+            path={ONBOARDING_CONFIRM_SRP_ROUTE}
             element={
               <ConfirmRecoveryPhrase
                 secretRecoveryPhrase={secretRecoveryPhrase}
@@ -331,47 +342,53 @@ export default function OnboardingFlow() {
             }
           />
           <Route
-            path={toRelativePath(ONBOARDING_IMPORT_WITH_SRP_ROUTE)}
+            path={ONBOARDING_IMPORT_WITH_SRP_ROUTE}
             element={
               <ImportSRP submitSecretRecoveryPhrase={setSecretRecoveryPhrase} />
             }
           />
           <Route
-            path={toRelativePath(ONBOARDING_UNLOCK_ROUTE)}
-            element={<Unlock onSubmit={handleUnlock} />}
+            path={ONBOARDING_UNLOCK_ROUTE}
+            element={
+              <Unlock
+                onSubmit={handleUnlock}
+                navigate={navigate}
+                location={location}
+              />
+            }
           />
           <Route
-            path={toRelativePath(ONBOARDING_PRIVACY_SETTINGS_ROUTE)}
+            path={ONBOARDING_PRIVACY_SETTINGS_ROUTE}
             element={<PrivacySettings />}
           />
           <Route
-            path={toRelativePath(ONBOARDING_COMPLETION_ROUTE)}
+            path={ONBOARDING_COMPLETION_ROUTE}
             element={<CreationSuccessful />}
           />
           <Route
-            path={toRelativePath(ONBOARDING_WELCOME_ROUTE)}
+            path={ONBOARDING_WELCOME_ROUTE}
             element={<OnboardingWelcome />}
           />
           <Route
-            path={toRelativePath(ONBOARDING_METAMETRICS)}
+            path={ONBOARDING_METAMETRICS}
             element={<MetaMetricsComponent />}
           />
           <Route
-            path={toRelativePath(ONBOARDING_DOWNLOAD_APP_ROUTE)}
+            path={ONBOARDING_DOWNLOAD_APP_ROUTE}
             element={<OnboardingDownloadApp />}
           />
           {
             ///: BEGIN:ONLY_INCLUDE_IF(build-flask)
           }
           <Route
-            path={toRelativePath(ONBOARDING_EXPERIMENTAL_AREA)}
+            path={ONBOARDING_EXPERIMENTAL_AREA}
             element={<ExperimentalArea redirectTo={ONBOARDING_WELCOME_ROUTE} />}
           />
           {
             ///: END:ONLY_INCLUDE_IF
           }
           <Route path="*" element={<OnboardingFlowSwitch />} />
-        </Routes>
+        </Switch>
       </Box>
       {isLoading && <LoadingScreen />}
     </Box>
