@@ -53,7 +53,6 @@ const performDappActionAndVerify = async (
 ) => {
   await action();
   await driver.switchToWindowWithTitle(WINDOW_TITLES.Dialog);
-  await driver.delay(500);
   const confirmAlertModal = new ConfirmAlertModal(driver);
   await confirmAlertModal.verifyNetworkDisplay(networkName);
 };
