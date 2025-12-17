@@ -40,16 +40,8 @@ describe('Incremental Security', function (this: Suite) {
         dappOptions: {
           customDappPaths: ['./send-eth-with-private-key-test'],
         },
-        fixtures: new FixtureBuilder({ onboarding: true })
-          .withPreferencesControllerShowNativeTokenAsMainBalanceEnabled()
-          .withEnabledNetworks({
-            eip155: {
-              '0x1': true,
-            },
-          })
-          .build(),
+        fixtures: new FixtureBuilder({ onboarding: true }).build(),
         testSpecificMock: mockSpotPrices,
-
         title: this.test?.fullTitle(),
       },
       async ({
@@ -138,7 +130,9 @@ describe('Incremental Security', function (this: Suite) {
         await homePage.checkPageIsLoaded();
         // to update balance faster and avoid timeout error
         await driver.refresh();
-        await homePage.checkExpectedBalanceIsDisplayed('1', 'ETH');
+
+        await driver.delay(5000);
+        await homePage.checkExpectedBalanceIsDisplayed('5,100.00', '$');
 
         // Backup SRP flow - only for non-sidepanel builds
         // With sidepanel, appState is lost during page reload, so this flow won't work
@@ -156,7 +150,7 @@ describe('Incremental Security', function (this: Suite) {
 
           // check the balance is correct after revealing and confirming the SRP
           await homePage.checkPageIsLoaded();
-          await homePage.checkExpectedBalanceIsDisplayed('1', 'ETH');
+          await homePage.checkExpectedBalanceIsDisplayed('5,100.00', '$');
 
           // check backup reminder is not displayed on homepage
           await homePage.checkBackupReminderIsNotDisplayed();

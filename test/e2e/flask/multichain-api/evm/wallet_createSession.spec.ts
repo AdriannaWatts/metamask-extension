@@ -214,7 +214,7 @@ describe('Multichain API', function () {
               driver,
             );
             await editConnectedAccountsModal.checkPageIsLoaded();
-            await editConnectedAccountsModal.addNewAccount();
+            await editConnectedAccountsModal.addNewEthereumAccount();
 
             await connectAccountConfirmation.checkPageIsLoaded();
             await connectAccountConfirmation.goToPermissionsTab();
@@ -332,7 +332,7 @@ describe('Multichain API', function () {
               driver,
             );
             await editConnectedAccountsModal.checkPageIsLoaded();
-            await editConnectedAccountsModal.addNewAccount();
+            await editConnectedAccountsModal.addNewEthereumAccount();
 
             await connectAccountConfirmation.checkPageIsLoaded();
             await connectAccountConfirmation.confirmConnect();
@@ -388,7 +388,7 @@ describe('Multichain API', function () {
             );
             await editConnectedAccountsModal.checkPageIsLoaded();
             await editConnectedAccountsModal.selectAccount(1);
-            await editConnectedAccountsModal.clickOnConnect();
+            await editConnectedAccountsModal.disconnectAccount();
 
             await connectAccountConfirmation.checkPageIsLoaded();
             assert.strictEqual(
@@ -472,8 +472,8 @@ describe('Multichain API', function () {
           const expectedNewSessionScopes = [...OLD_SCOPES, ...NEW_SCOPES].map(
             (scope) => ({
               [scope]: getExpectedSessionScope(scope, [
-                TREZOR_ACCOUNT,
                 ACCOUNT_1,
+                TREZOR_ACCOUNT,
               ]),
             }),
           );

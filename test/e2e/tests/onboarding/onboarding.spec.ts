@@ -61,6 +61,7 @@ describe('MetaMask onboarding', function () {
 
         await unlockWallet(driver, {
           navigate: true,
+          waitLoginSuccess: true,
           password: WALLET_PASSWORD,
         });
 
@@ -107,18 +108,7 @@ describe('MetaMask onboarding', function () {
   it('Imports an existing wallet, sets up a secure password, and completes the onboarding process', async function () {
     await withFixtures(
       {
-        fixtures: new FixtureBuilder({ onboarding: true })
-          .withPreferencesController({
-            preferences: {
-              showNativeTokenAsMainBalance: true,
-            },
-          })
-          .withEnabledNetworks({
-            eip155: {
-              '0x1': true,
-            },
-          })
-          .build(),
+        fixtures: new FixtureBuilder({ onboarding: true }).build(),
         testSpecificMock: mockSpotPrices,
         title: this.test?.fullTitle(),
       },
@@ -126,7 +116,7 @@ describe('MetaMask onboarding', function () {
         await completeImportSRPOnboardingFlow({ driver });
         const homePage = new HomePage(driver);
         await homePage.checkPageIsLoaded();
-        await homePage.checkExpectedBalanceIsDisplayed('25', 'ETH');
+        await homePage.checkExpectedBalanceIsDisplayed('127,500.00', '$');
       },
     );
   });
@@ -209,13 +199,7 @@ describe('MetaMask onboarding', function () {
     const chainId = 1338;
     await withFixtures(
       {
-        fixtures: new FixtureBuilder({ onboarding: true })
-          .withPreferencesController({
-            preferences: {
-              showNativeTokenAsMainBalance: true,
-            },
-          })
-          .build(),
+        fixtures: new FixtureBuilder({ onboarding: true }).build(),
         localNodeOptions: [
           {
             type: 'anvil',
@@ -267,7 +251,7 @@ describe('MetaMask onboarding', function () {
         await homePage.checkPageIsLoaded();
 
         // Fiat value should be displayed as we mock the price and that is not a 'test network'
-        await homePage.checkExpectedBalanceIsDisplayed('10', 'ETH');
+        await homePage.checkExpectedBalanceIsDisplayed('17,000.00', '$');
 
         // Check for network addition toast
         // Note: With sidepanel enabled, appState is lost during page reload,
@@ -316,9 +300,7 @@ describe('MetaMask onboarding', function () {
     );
   });
 
-  // But #38077 - After estoring account from state persistence failure Metamask unlock is not working
-  // eslint-disable-next-line mocha/no-skipped-tests
-  it.skip('Provides an onboarding path for a user who has restored their account from state persistence failure', async function () {
+  it('Provides an onboarding path for a user who has restored their account from state persistence failure', async function () {
     // We don't use onboarding: true here because we want there to be a vault,
     // simulating what will happen when a user eventually restores their vault
     // during a state persistence failure. Instead, we set the

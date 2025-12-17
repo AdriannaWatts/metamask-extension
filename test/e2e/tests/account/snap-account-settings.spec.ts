@@ -22,10 +22,9 @@ describe('Add snap account experimental settings', function (this: Suite) {
         const headerNavbar = new HeaderNavbar(driver);
         await headerNavbar.openAccountMenu();
         const accountListPage = new AccountListPage(driver);
-        await accountListPage.addMultichainWallet();
+        await accountListPage.openAddAccountModal();
         await accountListPage.checkAddAccountSnapButtonNotPresent();
         await accountListPage.closeAccountModal();
-        await accountListPage.closeMultichainAccountsPage();
 
         // Navigate to experimental settings and enable Add account Snap.
         await headerNavbar.openSettingsPage();
@@ -41,7 +40,7 @@ describe('Add snap account experimental settings', function (this: Suite) {
         );
         // Make sure the "Add account Snap" button is visible.
         await headerNavbar.openAccountMenu();
-        await accountListPage.addMultichainWallet();
+        await accountListPage.openAddAccountModal();
         await accountListPage.checkAddAccountSnapButtonIsDisplayed();
       },
     );

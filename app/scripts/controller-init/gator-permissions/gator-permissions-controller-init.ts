@@ -4,7 +4,7 @@ import {
 } from '@metamask/gator-permissions-controller';
 import { assertIsValidSnapId } from '@metamask/snaps-utils';
 import { ControllerInitFunction } from '../types';
-import { getEnabledAdvancedPermissions } from '../../../../shared/modules/environment';
+import { isGatorPermissionsFeatureEnabled } from '../../../../shared/modules/environment';
 import { GatorPermissionsControllerMessenger } from '../messengers/gator-permissions';
 
 const generateDefaultGatorPermissionsControllerState =
@@ -26,8 +26,7 @@ const generateDefaultGatorPermissionsControllerState =
       }
     }
 
-    const isGatorPermissionsEnabled =
-      getEnabledAdvancedPermissions().length > 0;
+    const isGatorPermissionsEnabled = isGatorPermissionsFeatureEnabled();
 
     const state: Partial<GatorPermissionsControllerState> = {
       isGatorPermissionsEnabled,

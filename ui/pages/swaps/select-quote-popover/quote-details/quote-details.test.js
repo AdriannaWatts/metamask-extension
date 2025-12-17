@@ -1,7 +1,10 @@
 import React from 'react';
 import configureMockStore from 'redux-mock-store';
-import { renderWithProvider } from '../../../../../test/lib/render-helpers-navigate';
-import { createSwapsMockStore } from '../../../../../test/jest';
+
+import {
+  renderWithProvider,
+  createSwapsMockStore,
+} from '../../../../../test/jest';
 import quoteDataRows from '../mock-quote-data';
 import QuoteDetails from './quote-details';
 
