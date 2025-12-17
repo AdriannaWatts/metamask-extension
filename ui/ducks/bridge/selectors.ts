@@ -44,6 +44,7 @@ import type {
   TokenBalancesControllerState,
   TokenListState,
   TokenRatesControllerState,
+  TokensControllerState,
 } from '@metamask/assets-controllers';
 import type { MultichainTransactionsControllerState } from '@metamask/multichain-transactions-controller';
 import type { MultichainNetworkControllerState } from '@metamask/multichain-network-controller';
@@ -84,7 +85,7 @@ import {
   getWalletsWithAccounts,
 } from '../../selectors/multichain-accounts/account-tree';
 import { getAllEnabledNetworksForAllNamespaces } from '../../selectors/multichain/networks';
-
+import { type MultichainAccountsState } from '../../selectors/multichain-accounts/account-tree.types';
 import {
   exchangeRateFromMarketData,
   tokenPriceInNativeAsset,
@@ -104,10 +105,11 @@ export type BridgeAppState = {
     AccountTreeControllerState &
     AccountTrackerControllerState &
     TokenBalancesControllerState &
+    TokensControllerState &
+    MultichainAccountsState['metamask'] &
     MultichainAssetsRatesControllerState &
     TokenRatesControllerState &
     RatesControllerState &
-    TokenBalancesControllerState &
     MultichainBalancesControllerState &
     MultichainTransactionsControllerState &
     MultichainAssetsControllerState &
