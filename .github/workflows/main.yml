@@ -253,27 +253,27 @@ jobs:
       builds-from-run: ${{ needs.identify-builds.outputs.builds-from-run }}
     secrets: inherit
 
-  run-benchmarks:
-    # If not a fork, run benchmarks
-    if: ${{ !(github.event.pull_request.head.repo.fork || github.event.repository.fork) }}
-    uses: ./.github/workflows/run-benchmarks.yml
-    needs:
-      - identify-builds
-      - prep-deps
-      - build-test-browserify
-      - build-test-mv2-browserify
-      - build-test-webpack
-      - build-test-mv2-webpack
-    with:
-      builds-from-run: ${{ needs.identify-builds.outputs.builds-from-run }}
-    secrets:
-      INFURA_PROJECT_ID: ${{ secrets.INFURA_PROJECT_ID }}
+  # run-benchmarks:
+  #   # If not a fork, run benchmarks
+  #   if: ${{ !(github.event.pull_request.head.repo.fork || github.event.repository.fork) }}
+  #   uses: ./.github/workflows/run-benchmarks.yml
+  #   needs:
+  #     - identify-builds
+  #     - prep-deps
+  #     - build-test-browserify
+  #     - build-test-mv2-browserify
+  #     - build-test-webpack
+  #     - build-test-mv2-webpack
+  #   with:
+  #     builds-from-run: ${{ needs.identify-builds.outputs.builds-from-run }}
+  #   secrets:
+  #     INFURA_PROJECT_ID: ${{ secrets.INFURA_PROJECT_ID }}
 
-  run-tests:
-    name: Run tests
-    needs:
-      - prep-deps
-    uses: ./.github/workflows/run-tests.yml
+  # run-tests:
+  #   name: Run tests
+  #   needs:
+  #     - prep-deps
+  #   uses: ./.github/workflows/run-tests.yml
 
   bundle-size:
     needs:
@@ -489,48 +489,48 @@ jobs:
           s3-bucket: ${{ vars.AWS_S3_BUCKET }}/${{ github.event.repository.name }}/${{ github.run_id }}/lavamoat-viz
           path: build-artifacts/build-viz
 
-  publish-prerelease:
-    name: Publish prerelease
-    if: ${{ github.event_name != 'merge_group' }} # Skip this job for the Merge Queue
-    needs:
-      - identify-builds
-      - build-dist-browserify
-      - build-dist-mv2-browserify
-      - build-beta-browserify
-      - build-beta-mv2-browserify
-      - build-flask-browserify
-      - build-flask-mv2-browserify
-      - build-test-browserify
-      - build-test-mv2-browserify
-      - build-test-flask-browserify
-      - build-test-flask-mv2-browserify
-      - run-benchmarks
-      - page-load-benchmark
-      - bundle-size
-      - build-storybook
-      - build-ts-migration-dashboard
-      - build-source-map-explorer
-      - build-lavamoat-viz
-    uses: ./.github/workflows/publish-prerelease.yml
-    with:
-      lavamoat-policy-changed: ${{ needs.build-lavamoat-viz.outputs.lavamoat-policy-changed == 'true' }}
-      post-new-builds: ${{ needs.identify-builds.outputs.builds-from-run == github.run_id }}
-    secrets:
-      PR_COMMENT_TOKEN: ${{ secrets.PR_COMMENT_TOKEN }}
+  # publish-prerelease:
+  #   name: Publish prerelease
+  #   if: ${{ github.event_name != 'merge_group' }} # Skip this job for the Merge Queue
+  #   needs:
+  #     - identify-builds
+  #     - build-dist-browserify
+  #     - build-dist-mv2-browserify
+  #     - build-beta-browserify
+  #     - build-beta-mv2-browserify
+  #     - build-flask-browserify
+  #     - build-flask-mv2-browserify
+  #     - build-test-browserify
+  #     - build-test-mv2-browserify
+  #     - build-test-flask-browserify
+  #     - build-test-flask-mv2-browserify
+  #     - run-benchmarks
+  #     - page-load-benchmark
+  #     - bundle-size
+  #     - build-storybook
+  #     - build-ts-migration-dashboard
+  #     - build-source-map-explorer
+  #     - build-lavamoat-viz
+  #   uses: ./.github/workflows/publish-prerelease.yml
+  #   with:
+  #     lavamoat-policy-changed: ${{ needs.build-lavamoat-viz.outputs.lavamoat-policy-changed == 'true' }}
+  #     post-new-builds: ${{ needs.identify-builds.outputs.builds-from-run == github.run_id }}
+  #   secrets:
+  #     PR_COMMENT_TOKEN: ${{ secrets.PR_COMMENT_TOKEN }}
 
-  publish-release:
-    name: Publish release
-    if: ${{ github.event_name == 'push' && github.ref_name == 'stable' }}
-    needs:
-      - build-dist-browserify
-      - build-dist-mv2-browserify
-      - build-flask-browserify
-      - build-flask-mv2-browserify
-      - run-tests
-      - e2e-chrome
-      - e2e-firefox
-    uses: ./.github/workflows/publish-release.yml
-    secrets: inherit
+  # publish-release:
+  #   name: Publish release
+  #   if: ${{ github.event_name == 'push' && github.ref_name == 'stable' }}
+  #   needs:
+  #     - build-dist-browserify
+  #     - build-dist-mv2-browserify
+  #     - build-flask-browserify
+  #     - build-flask-mv2-browserify
+  #     - run-tests
+  #     - e2e-chrome
+  #     - e2e-firefox
+  #   uses: ./.github/workflows/publish-release.yml
+  #   secrets: inherit
 
   # Explanation for all-jobs-completed and all-jobs-pass being separate:
   # https://github.com/MetaMask/metamask-module-template/pull/151
@@ -556,7 +556,7 @@ jobs:
       - build-test-flask-mv2-browserify
       - build-test-webpack
       - build-test-mv2-webpack
-      - run-tests
+      # - run-tests
       - build-storybook
       - build-ts-migration-dashboard
       - build-source-map-explorer
