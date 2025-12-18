@@ -19,7 +19,7 @@ import {
 
 describe('Solana Wallet Standard - e2e tests', function () {
   describe('Solana Wallet Standard - Connect & disconnect', function () {
-    it('Should connect and check there is existing Solana accounts in the wallet', async function () {
+    it('Should onboard and connect when there are no existing Solana accounts in the wallet', async function () {
       await withSolanaAccountSnap(
         {
           ...DEFAULT_SOLANA_TEST_DAPP_FIXTURE_OPTIONS,
@@ -31,7 +31,7 @@ describe('Solana Wallet Standard - e2e tests', function () {
           await testDapp.openTestDappPage();
           await testDapp.checkPageIsLoaded();
 
-          await connectSolanaTestDapp(driver, testDapp);
+          await connectSolanaTestDapp(driver, testDapp, { onboard: true });
 
           const header = await testDapp.getHeader();
 
@@ -208,7 +208,9 @@ describe('Solana Wallet Standard - e2e tests', function () {
           const testDapp = new TestDappSolana(driver);
           await testDapp.openTestDappPage();
           await testDapp.checkPageIsLoaded();
-          await connectSolanaTestDapp(driver, testDapp);
+          await connectSolanaTestDapp(driver, testDapp, {
+            selectAllAccounts: true,
+          });
           await driver.delay(regularDelayMs);
 
           // Check that we're connected to the last selected account
@@ -220,7 +222,7 @@ describe('Solana Wallet Standard - e2e tests', function () {
           await driver.switchToWindowWithTitle(
             WINDOW_TITLES.ExtensionInFullScreenView,
           );
-          await switchToAccount(driver, 'Account 1');
+          await switchToAccount(driver, 'Solana 1');
           await testDapp.switchTo();
 
           // Check that we're connected to the first account
@@ -230,21 +232,23 @@ describe('Solana Wallet Standard - e2e tests', function () {
       );
     });
   });
-
   describe('Given I have connected to one of my two accounts', function () {
     it('Switching between them should NOT reflect in the dapp', async function () {
       await withSolanaAccountSnap(
         {
           ...DEFAULT_SOLANA_TEST_DAPP_FIXTURE_OPTIONS,
           title: this.test?.fullTitle(),
-          numberOfAccounts: 2, // we create 1 more account
+          numberOfAccounts: 2, // we create two account
         },
         async (driver) => {
           const testDapp = new TestDappSolana(driver);
           await testDapp.openTestDappPage();
           await testDapp.checkPageIsLoaded();
 
-          await connectSolanaTestDapp(driver, testDapp);
+          // By default, the connection is established with the second account, which is the last one selected in the UI.
+          await connectSolanaTestDapp(driver, testDapp, {
+            selectAllAccounts: false,
+          });
 
           // Check that we're connected to the second account
           const header = await testDapp.getHeader();
@@ -255,7 +259,7 @@ describe('Solana Wallet Standard - e2e tests', function () {
           await driver.switchToWindowWithTitle(
             WINDOW_TITLES.ExtensionInFullScreenView,
           );
-          await switchToAccount(driver, 'Account 1');
+          await switchToAccount(driver, 'Solana 1');
           await testDapp.switchTo();
 
           // Check that we're still connected to the second account
@@ -266,7 +270,7 @@ describe('Solana Wallet Standard - e2e tests', function () {
           await driver.switchToWindowWithTitle(
             WINDOW_TITLES.ExtensionInFullScreenView,
           );
-          await switchToAccount(driver, 'Account 2');
+          await switchToAccount(driver, 'Solana 2');
           await testDapp.switchTo();
 
           // Check that we're still connected to the second account
@@ -276,7 +280,6 @@ describe('Solana Wallet Standard - e2e tests', function () {
       );
     });
   });
-
   describe('Page refresh', function () {
     it('Should not disconnect the dapp', async function () {
       await withSolanaAccountSnap(
@@ -314,7 +317,9 @@ describe('Solana Wallet Standard - e2e tests', function () {
           const testDapp = new TestDappSolana(driver);
           await testDapp.openTestDappPage();
           await testDapp.checkPageIsLoaded();
-          await connectSolanaTestDapp(driver, testDapp);
+          await connectSolanaTestDapp(driver, testDapp, {
+            selectAllAccounts: true,
+          });
 
           await driver.refresh();
 
@@ -326,10 +331,7 @@ describe('Solana Wallet Standard - e2e tests', function () {
       );
     });
   });
-
-  // BUG #37690 Sending a transaction on TestDapp with BIP44 on fails with exception
-  // eslint-disable-next-line mocha/no-skipped-tests
-  describe.skip('Given I have connected to Mainnet and Devnet', function () {
+  describe('Given I have connected to Mainnet and Devnet', function () {
     it('Should use the Mainnet scope by default', async function () {
       await withSolanaAccountSnap(
         {
@@ -340,7 +342,9 @@ describe('Solana Wallet Standard - e2e tests', function () {
           const testDapp = new TestDappSolana(driver);
           await testDapp.openTestDappPage();
           await testDapp.checkPageIsLoaded();
-          await connectSolanaTestDapp(driver, testDapp, {});
+          await connectSolanaTestDapp(driver, testDapp, {
+            includeDevnet: true,
+          });
 
           // Refresh the page
           await driver.refresh();

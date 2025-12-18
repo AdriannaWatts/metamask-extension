@@ -1,6 +1,6 @@
 import React from 'react';
 import { act } from '@testing-library/react';
-import { renderWithProvider } from '../../../../../../test/lib/render-helpers-navigate';
+import { renderWithProvider, screen } from '../../../../../../test/jest';
 import configureStore from '../../../../../store/store';
 import AdvancedGasFeeInputSubtext from './advanced-gas-fee-input-subtext';
 
@@ -37,127 +37,127 @@ const renderComponent = async ({ props = {}, state = {} } = {}) => {
 describe('AdvancedGasFeeInputSubtext', () => {
   describe('when "latest" is non-nullish', () => {
     it('should render the latest fee if given a fee', async () => {
-      const { getByText } = await renderComponent({
+      await renderComponent({
         props: {
           latest: '123.12345',
         },
       });
 
-      expect(getByText('123.12 GWEI')).toBeInTheDocument();
+      expect(screen.getByText('123.12 GWEI')).toBeInTheDocument();
     });
 
     it('should render the latest fee range if given a fee range', async () => {
-      const { getByText } = await renderComponent({
+      await renderComponent({
         props: {
           latest: ['123.456', '456.789'],
         },
       });
 
-      expect(getByText('123.46 - 456.79 GWEI')).toBeInTheDocument();
+      expect(screen.getByText('123.46 - 456.79 GWEI')).toBeInTheDocument();
     });
 
     it('should render a fee trend arrow image if given "up" as the trend', async () => {
-      const { getByTitle } = await renderComponent({
+      await renderComponent({
         props: {
           latest: '123.12345',
           trend: 'up',
         },
       });
 
-      expect(getByTitle('up arrow')).toBeInTheDocument();
+      expect(screen.getByTitle('up arrow')).toBeInTheDocument();
     });
 
     it('should render a fee trend arrow image if given "down" as the trend', async () => {
-      const { getByTitle } = await renderComponent({
+      await renderComponent({
         props: {
           latest: '123.12345',
           trend: 'down',
         },
       });
 
-      expect(getByTitle('down arrow')).toBeInTheDocument();
+      expect(screen.getByTitle('down arrow')).toBeInTheDocument();
     });
 
     it('should render a fee trend arrow image if given "level" as the trend', async () => {
-      const { getByTitle } = await renderComponent({
+      await renderComponent({
         props: {
           latest: '123.12345',
           trend: 'level',
         },
       });
 
-      expect(getByTitle('level arrow')).toBeInTheDocument();
+      expect(screen.getByTitle('level arrow')).toBeInTheDocument();
     });
 
     it('should not render a fee trend arrow image if given an invalid trend', async () => {
       // Suppress warning from PropTypes, which we expect
       jest.spyOn(console, 'error').mockImplementation();
 
-      const { queryByTestId } = await renderComponent({
+      await renderComponent({
         props: {
           latest: '123.12345',
           trend: 'whatever',
         },
       });
 
-      expect(queryByTestId('fee-arrow')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('fee-arrow')).not.toBeInTheDocument();
     });
 
     it('should not render a fee trend arrow image if given a nullish trend', async () => {
-      const { queryByTestId } = await renderComponent({
+      await renderComponent({
         props: {
           latest: '123.12345',
           trend: null,
         },
       });
 
-      expect(queryByTestId('fee-arrow')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('fee-arrow')).not.toBeInTheDocument();
     });
   });
 
   describe('when "latest" is nullish', () => {
     it('should not render the container for the latest fee', async () => {
-      const { queryByTestId } = await renderComponent({
+      await renderComponent({
         props: {
           latest: null,
         },
       });
 
-      expect(queryByTestId('latest')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('latest')).not.toBeInTheDocument();
     });
   });
 
   describe('when "historical" is not nullish', () => {
     it('should render the historical fee if given a fee', async () => {
-      const { getByText } = await renderComponent({
+      await renderComponent({
         props: {
           historical: '123.12345',
         },
       });
 
-      expect(getByText('123.12 GWEI')).toBeInTheDocument();
+      expect(screen.getByText('123.12 GWEI')).toBeInTheDocument();
     });
 
     it('should render the historical fee range if given a fee range', async () => {
-      const { getByText } = await renderComponent({
+      await renderComponent({
         props: {
           historical: ['123.456', '456.789'],
         },
       });
 
-      expect(getByText('123.46 - 456.79 GWEI')).toBeInTheDocument();
+      expect(screen.getByText('123.46 - 456.79 GWEI')).toBeInTheDocument();
     });
   });
 
   describe('when "historical" is nullish', () => {
     it('should not render the container for the historical fee', async () => {
-      const { queryByTestId } = await renderComponent({
+      await renderComponent({
         props: {
           historical: null,
         },
       });
 
-      expect(queryByTestId('historical')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('historical')).not.toBeInTheDocument();
     });
   });
 });

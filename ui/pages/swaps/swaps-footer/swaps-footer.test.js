@@ -1,6 +1,6 @@
 import React from 'react';
-import { renderWithProvider } from '../../../../test/lib/render-helpers-navigate';
-import { fireEvent } from '../../../../test/jest';
+
+import { renderWithProvider, fireEvent } from '../../../../test/jest';
 import SwapsFooter from '.';
 
 const createProps = (customProps = {}) => {
