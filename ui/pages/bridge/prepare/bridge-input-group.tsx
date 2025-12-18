@@ -5,6 +5,7 @@ import {
   isNativeAddress,
 } from '@metamask/bridge-controller';
 import { getAccountLink } from '@metamask/etherscan-link';
+import { parseCaipAssetType } from '@metamask/utils';
 import {
   Text,
   TextField,
@@ -126,6 +127,7 @@ export const BridgeInputGroup = ({
     if (token && selectedChainId) {
       const caipChainId = formatChainIdToCaip(selectedChainId);
       const isSolana = caipChainId === MultichainNetworks.SOLANA;
+      const { assetReference } = parseCaipAssetType(token.assetId);
 
       let blockExplorerUrl = '';
       if (isSolana) {
@@ -134,7 +136,7 @@ export const BridgeInputGroup = ({
         if (blockExplorerUrls) {
           blockExplorerUrl = formatBlockExplorerAddressUrl(
             blockExplorerUrls,
-            token.address,
+            assetReference,
           );
         }
       } else {
@@ -144,7 +146,7 @@ export const BridgeInputGroup = ({
           ];
         if (explorerUrl) {
           blockExplorerUrl = getAccountLink(
-            token.address,
+            assetReference,
             selectedChainId,
             {
               blockExplorerUrl: explorerUrl,
