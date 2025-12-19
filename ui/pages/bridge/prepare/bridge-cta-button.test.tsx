@@ -18,10 +18,10 @@ describe('BridgeCTAButton', () => {
     const mockStore = createBridgeMockStore({
       featureFlagOverrides: {
         bridgeConfig: {
-          chainRanking: [
-            { chainId: formatChainIdToCaip(CHAIN_IDS.MAINNET) },
-            { chainId: formatChainIdToCaip(CHAIN_IDS.OPTIMISM) },
-          ],
+          chains: {
+            [CHAIN_IDS.MAINNET]: { isActiveSrc: true, isActiveDest: false },
+            [CHAIN_IDS.OPTIMISM]: { isActiveSrc: true, isActiveDest: true },
+          },
         },
       },
       bridgeSliceOverrides: { fromTokenInputValue: '1' },
@@ -40,11 +40,14 @@ describe('BridgeCTAButton', () => {
     const mockStore = createBridgeMockStore({
       featureFlagOverrides: {
         bridgeConfig: {
-          chainRanking: [
-            { chainId: formatChainIdToCaip(CHAIN_IDS.MAINNET) },
-            { chainId: formatChainIdToCaip(CHAIN_IDS.OPTIMISM) },
-            { chainId: formatChainIdToCaip(CHAIN_IDS.LINEA_MAINNET) },
-          ],
+          chains: {
+            [CHAIN_IDS.MAINNET]: { isActiveSrc: true, isActiveDest: false },
+            [CHAIN_IDS.OPTIMISM]: { isActiveSrc: true, isActiveDest: false },
+            [CHAIN_IDS.LINEA_MAINNET]: {
+              isActiveSrc: false,
+              isActiveDest: true,
+            },
+          },
         },
       },
       bridgeSliceOverrides: {
@@ -66,11 +69,14 @@ describe('BridgeCTAButton', () => {
     const mockStore = createBridgeMockStore({
       featureFlagOverrides: {
         bridgeConfig: {
-          chainRanking: [
-            { chainId: formatChainIdToCaip(CHAIN_IDS.MAINNET) },
-            { chainId: formatChainIdToCaip(CHAIN_IDS.OPTIMISM) },
-            { chainId: formatChainIdToCaip(CHAIN_IDS.LINEA_MAINNET) },
-          ],
+          chains: {
+            [CHAIN_IDS.MAINNET]: { isActiveSrc: true, isActiveDest: false },
+            [CHAIN_IDS.OPTIMISM]: { isActiveSrc: true, isActiveDest: false },
+            [CHAIN_IDS.LINEA_MAINNET]: {
+              isActiveSrc: false,
+              isActiveDest: true,
+            },
+          },
         },
       },
       bridgeSliceOverrides: {
@@ -96,11 +102,14 @@ describe('BridgeCTAButton', () => {
     const mockStore = createBridgeMockStore({
       featureFlagOverrides: {
         bridgeConfig: {
-          chainRanking: [
-            { chainId: formatChainIdToCaip(CHAIN_IDS.MAINNET) },
-            { chainId: formatChainIdToCaip(CHAIN_IDS.OPTIMISM) },
-            { chainId: formatChainIdToCaip(CHAIN_IDS.LINEA_MAINNET) },
-          ],
+          chains: {
+            [CHAIN_IDS.MAINNET]: { isActiveSrc: true, isActiveDest: false },
+            [CHAIN_IDS.OPTIMISM]: { isActiveSrc: true, isActiveDest: false },
+            [CHAIN_IDS.LINEA_MAINNET]: {
+              isActiveSrc: false,
+              isActiveDest: true,
+            },
+          },
         },
       },
       bridgeSliceOverrides: {
@@ -126,11 +135,14 @@ describe('BridgeCTAButton', () => {
     const mockStore = createBridgeMockStore({
       featureFlagOverrides: {
         bridgeConfig: {
-          chainRanking: [
-            { chainId: formatChainIdToCaip(CHAIN_IDS.MAINNET) },
-            { chainId: formatChainIdToCaip(CHAIN_IDS.OPTIMISM) },
-            { chainId: formatChainIdToCaip(CHAIN_IDS.LINEA_MAINNET) },
-          ],
+          chains: {
+            [CHAIN_IDS.MAINNET]: { isActiveSrc: true, isActiveDest: false },
+            [CHAIN_IDS.OPTIMISM]: { isActiveSrc: true, isActiveDest: false },
+            [CHAIN_IDS.LINEA_MAINNET]: {
+              isActiveSrc: false,
+              isActiveDest: true,
+            },
+          },
         },
       },
       bridgeSliceOverrides: {
@@ -158,11 +170,20 @@ describe('BridgeCTAButton', () => {
     const mockStore = createBridgeMockStore({
       featureFlagOverrides: {
         bridgeConfig: {
-          chainRanking: [
-            { chainId: formatChainIdToCaip(CHAIN_IDS.MAINNET) },
-            { chainId: formatChainIdToCaip(CHAIN_IDS.OPTIMISM) },
-            { chainId: formatChainIdToCaip(CHAIN_IDS.LINEA_MAINNET) },
-          ],
+          chains: {
+            [CHAIN_IDS.MAINNET]: {
+              isActiveSrc: true,
+              isActiveDest: false,
+            },
+            [CHAIN_IDS.OPTIMISM]: {
+              isActiveSrc: true,
+              isActiveDest: false,
+            },
+            [CHAIN_IDS.LINEA_MAINNET]: {
+              isActiveSrc: false,
+              isActiveDest: true,
+            },
+          },
         },
       },
       bridgeSliceOverrides: {
@@ -207,11 +228,20 @@ describe('BridgeCTAButton', () => {
       const mockStore = createBridgeMockStore({
         featureFlagOverrides: {
           bridgeConfig: {
-            chainRanking: [
-              { chainId: formatChainIdToCaip(CHAIN_IDS.MAINNET) },
-              { chainId: formatChainIdToCaip(CHAIN_IDS.OPTIMISM) },
-              { chainId: formatChainIdToCaip(CHAIN_IDS.LINEA_MAINNET) },
-            ],
+            chains: {
+              [CHAIN_IDS.MAINNET]: {
+                isActiveSrc: true,
+                isActiveDest: false,
+              },
+              [CHAIN_IDS.OPTIMISM]: {
+                isActiveSrc: true,
+                isActiveDest: false,
+              },
+              [CHAIN_IDS.LINEA_MAINNET]: {
+                isActiveSrc: false,
+                isActiveDest: true,
+              },
+            },
           },
         },
         bridgeSliceOverrides: {
@@ -253,11 +283,20 @@ describe('BridgeCTAButton', () => {
     const mockStore = createBridgeMockStore({
       featureFlagOverrides: {
         bridgeConfig: {
-          chainRanking: [
-            { chainId: formatChainIdToCaip(CHAIN_IDS.MAINNET) },
-            { chainId: formatChainIdToCaip(CHAIN_IDS.OPTIMISM) },
-            { chainId: formatChainIdToCaip(CHAIN_IDS.LINEA_MAINNET) },
-          ],
+          chains: {
+            [CHAIN_IDS.MAINNET]: {
+              isActiveSrc: true,
+              isActiveDest: false,
+            },
+            [CHAIN_IDS.OPTIMISM]: {
+              isActiveSrc: true,
+              isActiveDest: false,
+            },
+            [CHAIN_IDS.LINEA_MAINNET]: {
+              isActiveSrc: false,
+              isActiveDest: true,
+            },
+          },
         },
       },
       bridgeSliceOverrides: {

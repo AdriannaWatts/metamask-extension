@@ -1,8 +1,5 @@
 import { toChecksumAddress } from 'ethereumjs-util';
-import {
-  formatChainIdToCaip,
-  getNativeAssetForChainId,
-} from '@metamask/bridge-controller';
+import { getNativeAssetForChainId } from '@metamask/bridge-controller';
 import { NetworkConfiguration } from '@metamask/network-controller';
 import { MetaMetricsSwapsEventSource } from '../../../shared/constants/metametrics';
 import { renderHookWithProvider } from '../../../test/lib/render-helpers-navigate';
@@ -28,7 +25,7 @@ jest.mock('react-redux', () => ({
 const mockSetFromChain = jest.fn();
 jest.mock('../../ducks/bridge/actions', () => ({
   ...jest.requireActual('../../ducks/bridge/actions'),
-  setFromToken: () => mockSetFromChain(),
+  setFromChain: () => mockSetFromChain(),
 }));
 
 const MOCK_METAMETRICS_ID = '0xtestMetaMetricsId';
@@ -80,9 +77,9 @@ describe('useBridging', () => {
         false,
       ],
       [
-        '/cross-chain/swaps/prepare-swap-page?',
+        '/cross-chain/swaps/prepare-swap-page?from=eip155:1/slip44:60',
         {
-          ...getNativeAssetForChainId(CHAIN_IDS.SEI),
+          ...getNativeAssetForChainId(CHAIN_IDS.MAINNET),
           chainId: 243,
         },
         MetaMetricsSwapsEventSource.TokenView,
@@ -116,8 +113,8 @@ describe('useBridging', () => {
         jest
           .spyOn(bridgeSelectors, 'getFromChains')
           .mockReturnValueOnce([
-            { chainId: 'eip155:1' },
-            { chainId: 'eip155:10' },
+            { chainId: CHAIN_IDS.MAINNET } as unknown as NetworkConfiguration,
+            { chainId: CHAIN_IDS.OPTIMISM } as unknown as NetworkConfiguration,
           ]);
         const { result } = renderUseBridging({
           metamask: {
@@ -134,9 +131,12 @@ describe('useBridging', () => {
                 refreshRate: 5000,
                 minimumVersion: '0.0.0',
                 maxRefreshCount: 5,
-                chainRanking: [
-                  { chainId: formatChainIdToCaip(CHAIN_IDS.MAINNET) },
-                ],
+                chains: {
+                  '1': {
+                    isActiveSrc: true,
+                    isActiveDest: false,
+                  },
+                },
               },
             },
             enabledNetworkMap: {
@@ -203,9 +203,6 @@ describe('useBridging', () => {
       ) => {
         const openTabSpy = jest.spyOn(global.platform, 'openTab');
         jest
-          .spyOn(bridgeSelectors, 'getLastSelectedChainId')
-          .mockReturnValueOnce(CHAIN_IDS.MAINNET);
-        jest
           .spyOn(bridgeSelectors, 'getFromChains')
           .mockReturnValueOnce([
             { chainId: CHAIN_IDS.MAINNET } as unknown as NetworkConfiguration,
@@ -229,10 +226,16 @@ describe('useBridging', () => {
                 refreshRate: 5000,
                 minimumVersion: '0.0.0',
                 maxRefreshCount: 5,
-                chainRanking: [
-                  { chainId: formatChainIdToCaip(CHAIN_IDS.MAINNET) },
-                  { chainId: formatChainIdToCaip(CHAIN_IDS.OPTIMISM) },
-                ],
+                chains: {
+                  '1': {
+                    isActiveSrc: true,
+                    isActiveDest: true,
+                  },
+                  '10': {
+                    isActiveSrc: true,
+                    isActiveDest: true,
+                  },
+                },
               },
             },
             enabledNetworkMap: {

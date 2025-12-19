@@ -1,4 +1,3 @@
-import { formatChainIdToCaip } from '@metamask/bridge-controller';
 import { renderHookWithProvider } from '../../../test/lib/render-helpers-navigate';
 import { CHAIN_IDS } from '../../../shared/constants/network';
 import { MultichainNetworks } from '../../../shared/constants/multichain/networks';
@@ -29,19 +28,28 @@ jest.mock(
   }),
 );
 
+// For now we have to mock toChain Solana, remove once it is truly implemented
+const mockGetToChain = { chainId: MultichainNetworks.SOLANA };
+jest.mock('../../ducks/bridge/selectors', () => ({
+  ...jest.requireActual('../../ducks/bridge/selectors'),
+  getToChain: () => mockGetToChain,
+}));
+
 describe('useTokenAlerts', () => {
   it('should set token alert when toChain is Solana', async () => {
     const mockStoreState = createBridgeMockStore({
       featureFlagOverrides: {
         bridgeConfig: {
-          chainRanking: [
-            {
-              chainId: MultichainNetworks.SOLANA,
+          chains: {
+            [CHAIN_IDS.MAINNET]: {
+              isActiveSrc: true,
+              isActiveDest: true,
             },
-            {
-              chainId: formatChainIdToCaip(CHAIN_IDS.MAINNET),
+            [MultichainNetworks.SOLANA]: {
+              isActiveSrc: true,
+              isActiveDest: true,
             },
-          ],
+          },
         },
       },
       bridgeSliceOverrides: {

@@ -2,22 +2,31 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import classnames from 'classnames';
 import { debounce } from 'lodash';
+import { type TokenListMap } from '@metamask/assets-controllers';
+import { zeroAddress } from 'ethereumjs-util';
 import {
   formatChainIdToCaip,
+  isNonEvmChainId,
   isValidQuoteRequest,
+  getNativeAssetForChainId,
   isNativeAddress,
   UnifiedSwapBridgeEventName,
   type BridgeController,
+  isCrossChain,
+  isBitcoinChainId,
   formatAddressToCaipReference,
 } from '@metamask/bridge-controller';
+import { type CaipChainId, type Hex, isStrictHexString } from '@metamask/utils';
 import {
   setFromToken,
   setFromTokenInputValue,
   setSelectedQuote,
+  setToChainId,
   setToToken,
   updateQuoteRequestParams,
   resetBridgeState,
   trackUnifiedSwapBridgeEvent,
+  setFromChain,
 } from '../../../ducks/bridge/actions';
 import {
   getBridgeQuotes,
@@ -36,6 +45,7 @@ import {
   getIsToOrFromNonEvm,
   getHardwareWalletName,
   getIsQuoteExpired,
+  getIsSwap,
   BridgeAppState,
   getTxAlerts,
   getFromAccount,
@@ -64,14 +74,16 @@ import {
   TextVariant,
 } from '../../../helpers/constants/design-system';
 import { useI18nContext } from '../../../hooks/useI18nContext';
+import { useTokensWithFiltering } from '../../../hooks/bridge/useTokensWithFiltering';
 import {
   formatTokenAmount,
   isQuoteExpiredOrInvalid as isQuoteExpiredOrInvalidUtil,
 } from '../utils/quote';
+import { isNetworkAdded } from '../../../ducks/bridge/utils';
 import MascotBackgroundAnimation from '../../swaps/mascot-background-animation/mascot-background-animation';
 import { Column } from '../layout';
 import useRamps from '../../../hooks/ramps/useRamps/useRamps';
-import { getCurrentKeyring } from '../../../selectors';
+import { getCurrentKeyring, getTokenList } from '../../../selectors';
 import { isHardwareKeyring } from '../../../helpers/utils/hardware';
 import { SECOND } from '../../../../shared/constants/time';
 import { getIntlLocale } from '../../../ducks/locale/locale';
@@ -87,10 +99,15 @@ import { useDestinationAccount } from '../hooks/useDestinationAccount';
 import { Toast, ToastContainer } from '../../../components/multichain';
 import { useIsTxSubmittable } from '../../../hooks/bridge/useIsTxSubmittable';
 import type { BridgeToken } from '../../../ducks/bridge/types';
+import { toAssetId } from '../../../../shared/lib/asset-utils';
 import { endTrace, TraceName } from '../../../../shared/lib/trace';
+import {
+  TOKEN_OCCURRENCES_MAP,
+  MINIMUM_TOKEN_OCCURRENCES,
+  type ChainId,
+} from '../../../../shared/constants/network';
 import { useBridgeQueryParams } from '../../../hooks/bridge/useBridgeQueryParams';
 import { useSmartSlippage } from '../../../hooks/bridge/useSmartSlippage';
-import { isNetworkAdded } from '../../../ducks/bridge/utils';
 import { useGasIncluded7702 } from '../hooks/useGasIncluded7702';
 import { useIsSendBundleSupported } from '../hooks/useIsSendBundleSupported';
 import { useEnableMissingNetwork } from '../hooks/useEnableMissingNetwork';
@@ -110,19 +127,29 @@ const PrepareBridgePage = ({
 
   const fromChain = useSelector(getFromChain);
 
+  const isSwap = useSelector(getIsSwap);
+
   const isSendBundleSupportedForChain = useIsSendBundleSupported(fromChain);
   const gasIncluded = useSelector((state) =>
     getIsGasIncluded(state, isSendBundleSupportedForChain),
   );
 
   const fromToken = useSelector(getFromToken);
+  const fromTokens = useSelector(getTokenList) as TokenListMap;
+
   const toToken = useSelector(getToToken);
 
   const fromChains = useSelector(getFromChains);
   const toChains = useSelector(getToChains);
   const toChain = useSelector(getToChain);
 
-  const isSwap = fromToken.chainId === toToken.chainId;
+  const isFromTokensLoading = useMemo(() => {
+    // Non-EVM chains (Solana, Bitcoin, Tron) don't use the EVM token list
+    if (fromChain && isNonEvmChainId(fromChain.chainId)) {
+      return false;
+    }
+    return Object.keys(fromTokens).length === 0;
+  }, [fromTokens, fromChain]);
 
   const fromAmount = useSelector(getFromAmount);
   const validatedFromValue = useSelector(getValidatedFromValue);
@@ -169,7 +196,7 @@ const PrepareBridgePage = ({
   });
 
   const shouldShowMaxButton =
-    fromToken && isNativeAddress(fromToken.assetId)
+    fromToken && isNativeAddress(fromToken.address)
       ? gasIncluded || gasIncluded7702
       : true;
 
@@ -207,11 +234,45 @@ const PrepareBridgePage = ({
     setIsDestinationAccountPickerOpen,
   } = useDestinationAccount();
 
+  const {
+    filteredTokenListGenerator: toTokenListGenerator,
+    isLoading: isToTokensLoading,
+  } = useTokensWithFiltering(
+    toChain?.chainId ?? fromChain?.chainId,
+    fromChain?.chainId === toChain?.chainId && fromToken && fromChain
+      ? (() => {
+          // Determine the address format based on chain type
+          // We need to make evm tokens lowercase for comparison as sometimes they are checksummed
+          let address = '';
+          if (isNativeAddress(fromToken.address)) {
+            address = '';
+          } else if (isNonEvmChainId(fromChain.chainId)) {
+            address = fromToken.address || '';
+          } else {
+            address = fromToken.address?.toLowerCase() || '';
+          }
+
+          return {
+            ...fromToken,
+            address,
+            // Ensure chainId is in CAIP format for proper comparison
+            chainId: formatChainIdToCaip(fromChain.chainId),
+          };
+        })()
+      : null,
+    selectedDestinationAccount?.address,
+  );
+
   const [rotateSwitchTokens, setRotateSwitchTokens] = useState(false);
 
   // Resets the banner visibility when new alerts found
   const [isTokenAlertBannerOpen, setIsTokenAlertBannerOpen] = useState(true);
   useEffect(() => setIsTokenAlertBannerOpen(true), [tokenAlert]);
+
+  // Resets the banner visibility when toToken is changed
+  const [isCannotVerifyTokenBannerOpen, setIsCannotVerifyTokenBannerOpen] =
+    useState(true);
+  useEffect(() => setIsCannotVerifyTokenBannerOpen(true), [toToken?.address]);
 
   // Background updates are debounced when the switch button is clicked
   // To prevent putting the frontend in an unexpected state, prevent the user
@@ -274,8 +335,8 @@ const PrepareBridgePage = ({
         ? formatAddressToCaipReference(destTokenAddress)
         : undefined,
       srcTokenAmount: validatedFromValue,
-      srcChainId: fromToken?.chainId,
-      destChainId: toToken?.chainId,
+      srcChainId: fromChain?.chainId,
+      destChainId: toChain?.chainId,
       // This override allows quotes to be returned when the rpcUrl is a forked network
       // Otherwise quotes get filtered out by the bridge-api when the wallet's real
       // balance is less than the tenderly balance
@@ -293,9 +354,9 @@ const PrepareBridgePage = ({
     toToken?.address,
     fromToken?.assetId,
     toToken?.assetId,
-    fromToken?.chainId,
-    toToken?.chainId,
     validatedFromValue,
+    fromChain?.chainId,
+    toChain?.chainId,
     slippage,
     selectedAccount?.address,
     selectedDestinationAccount?.address,
@@ -351,7 +412,13 @@ const PrepareBridgePage = ({
   }, [quoteParams]);
 
   // Use smart slippage defaults
-  useSmartSlippage();
+  useSmartSlippage({
+    fromChain,
+    toChain,
+    fromToken,
+    toToken,
+    isSwap,
+  });
 
   // Trace swap/bridge view loaded
   useEffect(() => {
@@ -368,6 +435,10 @@ const PrepareBridgePage = ({
 
   useBridgeQueryParams();
 
+  const occurrences = toToken?.occurrences ?? toToken?.aggregators?.length;
+  const toTokenIsNotNative =
+    toToken?.address && !isNativeAddress(toToken?.address);
+
   const [showBlockExplorerToast, setShowBlockExplorerToast] = useState(false);
   const [blockExplorerToken, setBlockExplorerToken] =
     useState<BridgeToken | null>(null);
@@ -379,6 +450,17 @@ const PrepareBridgePage = ({
 
   const getToInputHeader = () => {
     return t('swapSelectToken');
+  };
+
+  const getTokenOccurrences = (
+    chainId: Hex | CaipChainId | undefined,
+  ): number => {
+    if (!chainId || isNonEvmChainId(chainId)) {
+      return MINIMUM_TOKEN_OCCURRENCES;
+    }
+    return (
+      TOKEN_OCCURRENCES_MAP[chainId as ChainId] ?? MINIMUM_TOKEN_OCCURRENCES
+    );
   };
 
   return (
@@ -397,15 +479,33 @@ const PrepareBridgePage = ({
         <BridgeInputGroup
           header={getFromInputHeader()}
           token={fromToken}
-          accountAddress={selectedAccount?.address}
           onAmountChange={(e) => {
             dispatch(setFromTokenInputValue(e));
           }}
           onAssetChange={(token) => {
-            enableMissingNetwork(token.chainId);
-            dispatch(setFromToken(token));
+            const bridgeToken = {
+              ...token,
+              address: token.address ?? zeroAddress(),
+            };
+            dispatch(setFromToken(bridgeToken));
+            dispatch(setFromTokenInputValue(null));
           }}
-          networks={fromChains}
+          networkProps={{
+            // @ts-expect-error other network fields are not used by the asset picker
+            network: fromChain,
+            // @ts-expect-error other network fields are not used by the asset picker
+            networks: fromChains,
+            onNetworkChange: (networkConfig) => {
+              enableMissingNetwork(networkConfig.chainId);
+              dispatch(
+                setFromChain({
+                  chainId: networkConfig.chainId,
+                }),
+              );
+            },
+            header: t('yourNetworks'),
+          }}
+          isMultiselectEnabled={true}
           onMaxButtonClick={
             shouldShowMaxButton
               ? (value: string) => {
@@ -429,6 +529,7 @@ const PrepareBridgePage = ({
           containerProps={{
             paddingInline: 4,
           }}
+          isTokenListLoading={isFromTokensLoading}
           buttonProps={{ testId: 'bridge-source-button' }}
           onBlockExplorerClick={(token) => {
             setBlockExplorerToken(token);
@@ -484,55 +585,64 @@ const PrepareBridgePage = ({
                 (toChain && !isNetworkAdded(fromChains, toChain.chainId))
               }
               onClick={() => {
-                const previousDestAmount =
-                  unvalidatedQuote?.toTokenAmount?.amount;
                 dispatch(setSelectedQuote(null));
                 if (!toChain || !fromToken || !toToken) {
                   return;
                 }
                 // Track the flip event
-                fromToken &&
-                  toToken &&
-                  dispatch(
-                    trackUnifiedSwapBridgeEvent(
-                      UnifiedSwapBridgeEventName.InputSourceDestinationSwitched,
-                      {
-                        // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
-                        // eslint-disable-next-line @typescript-eslint/naming-convention
-                        token_symbol_source: toToken.symbol,
-                        // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
-                        // eslint-disable-next-line @typescript-eslint/naming-convention
-                        token_symbol_destination: fromToken.symbol,
-                        // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
-                        // eslint-disable-next-line @typescript-eslint/naming-convention
-                        token_address_source: toToken.assetId,
-                        // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
-                        // eslint-disable-next-line @typescript-eslint/naming-convention
-                        token_address_destination: fromToken.assetId,
-                        // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
-                        // eslint-disable-next-line @typescript-eslint/naming-convention
-                        chain_id_source: formatChainIdToCaip(toChain.chainId),
-                        // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
-                        // eslint-disable-next-line @typescript-eslint/naming-convention
-                        chain_id_destination: fromChain?.chainId
-                          ? formatChainIdToCaip(fromChain?.chainId)
-                          : null,
-                        // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
-                        // eslint-disable-next-line @typescript-eslint/naming-convention
-                        security_warnings: securityWarnings,
-                      },
-                    ),
-                  );
+                dispatch(
+                  trackUnifiedSwapBridgeEvent(
+                    UnifiedSwapBridgeEventName.InputSourceDestinationSwitched,
+                    {
+                      // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
+                      // eslint-disable-next-line @typescript-eslint/naming-convention
+                      token_symbol_source: toToken?.symbol ?? null,
+                      // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
+                      // eslint-disable-next-line @typescript-eslint/naming-convention
+                      token_symbol_destination: fromToken?.symbol ?? null,
+                      // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
+                      // eslint-disable-next-line @typescript-eslint/naming-convention
+                      token_address_source:
+                        toToken?.assetId ??
+                        toAssetId(
+                          toToken.address ?? '',
+                          formatChainIdToCaip(toToken.chainId ?? ''),
+                        ) ??
+                        getNativeAssetForChainId(toChain.chainId)?.assetId,
+                      // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
+                      // eslint-disable-next-line @typescript-eslint/naming-convention
+                      token_address_destination:
+                        toAssetId(
+                          fromToken.address ?? '',
+                          formatChainIdToCaip(fromToken.chainId ?? ''),
+                        ) ?? null,
+                      // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
+                      // eslint-disable-next-line @typescript-eslint/naming-convention
+                      chain_id_source: formatChainIdToCaip(toChain.chainId),
+                      // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
+                      // eslint-disable-next-line @typescript-eslint/naming-convention
+                      chain_id_destination: fromChain?.chainId
+                        ? formatChainIdToCaip(fromChain?.chainId)
+                        : null,
+                      // TODO: Fix in https://github.com/MetaMask/metamask-extension/issues/31860
+                      // eslint-disable-next-line @typescript-eslint/naming-convention
+                      security_warnings: securityWarnings,
+                    },
+                  ),
+                );
 
                 setRotateSwitchTokens(!rotateSwitchTokens);
 
-                toToken && dispatch(setFromToken(toToken));
-                previousDestAmount &&
+                if (isSwap) {
+                  dispatch(setFromToken(toToken));
+                } else {
                   dispatch(
-                    setFromTokenInputValue(
-                      formatTokenAmount(locale, previousDestAmount),
-                    ),
+                    setFromChain({
+                      chainId: toChain.chainId,
+                      token: toToken,
+                    }),
                   );
+                }
                 dispatch(setToToken(fromToken));
               }}
             />
@@ -548,17 +658,34 @@ const PrepareBridgePage = ({
 
           <BridgeInputGroup
             header={getToInputHeader()}
-            accountAddress={
-              selectedDestinationAccount?.address ?? selectedAccount.address
-            }
             token={toToken}
-            excludedAssetId={fromToken.assetId}
             onAssetChange={(token) => {
-              dispatch(setToToken(token));
+              const bridgeToken = {
+                ...token,
+                address: token.address ?? zeroAddress(),
+              };
+              dispatch(setToToken(bridgeToken));
             }}
-            // TODO enable missing network
-            // TODO disable network as needed
-            networks={toChains}
+            networkProps={{
+              // @ts-expect-error other network fields are not used by the asset picker
+              network: toChain,
+              // @ts-expect-error other network fields are not used by the asset picker
+              networks: toChains,
+              onNetworkChange: (networkConfig) => {
+                if (
+                  isNetworkAdded(fromChains, networkConfig.chainId) &&
+                  isStrictHexString(networkConfig.chainId)
+                ) {
+                  enableMissingNetwork(networkConfig.chainId);
+                }
+                dispatch(setToChainId(networkConfig.chainId));
+              },
+              header: t('yourNetworks'),
+              shouldDisableNetwork: ({ chainId }) =>
+                isBitcoinChainId(chainId) &&
+                !isCrossChain(chainId, fromChain?.chainId),
+            }}
+            customTokenListGenerator={toTokenListGenerator}
             amountInFiat={
               activeQuote?.toTokenAmount?.valueInCurrency ?? undefined
             }
@@ -574,12 +701,14 @@ const PrepareBridgePage = ({
                 ? 'amount-input defined'
                 : 'amount-input',
             }}
+            isTokenListLoading={isToTokensLoading}
             buttonProps={{ testId: 'bridge-destination-button' }}
             onBlockExplorerClick={(token) => {
               setBlockExplorerToken(token);
               setShowBlockExplorerToast(true);
               setToastTriggerCounter((prev) => prev + 1);
             }}
+            isDestinationToken
           />
 
           <Column
@@ -698,6 +827,19 @@ const PrepareBridgePage = ({
             textAlign={TextAlign.Left}
           />
         )}
+        {isCannotVerifyTokenBannerOpen &&
+          toToken &&
+          toTokenIsNotNative &&
+          Boolean(occurrences) &&
+          Number(occurrences) < getTokenOccurrences(toChain?.chainId) && (
+            <BannerAlert
+              severity={BannerAlertSeverity.Warning}
+              title={t('bridgeTokenCannotVerifyTitle')}
+              description={t('bridgeTokenCannotVerifyDescription')}
+              textAlign={TextAlign.Left}
+              onClose={() => setIsCannotVerifyTokenBannerOpen(false)}
+            />
+          )}
         {tokenAlert && isTokenAlertBannerOpen && (
           <BannerAlert
             title={tokenAlert.titleId ? t(tokenAlert.titleId) : ''}
@@ -759,7 +901,7 @@ const PrepareBridgePage = ({
                 <AvatarFavicon
                   name={blockExplorerToken.symbol}
                   size={AvatarFaviconSize.Sm}
-                  src={toToken.image ?? undefined}
+                  src={blockExplorerToken.image}
                 />
               }
             />

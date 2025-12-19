@@ -4,7 +4,6 @@ import {
   QuoteResponse,
   RequestStatus,
   formatChainIdToCaip,
-  getNativeAssetForChainId,
 } from '@metamask/bridge-controller';
 import { zeroAddress } from 'ethereumjs-util';
 import { renderWithProvider } from '../../../../test/lib/render-helpers-navigate';
@@ -14,10 +13,10 @@ import { CHAIN_IDS } from '../../../../shared/constants/network';
 import mockBridgeQuotesErc20Erc20 from '../../../../test/data/bridge/mock-quotes-erc20-erc20.json';
 import mockBridgeQuotesNativeErc20 from '../../../../test/data/bridge/mock-quotes-native-erc20.json';
 import { mockNetworkState } from '../../../../test/stub/networks';
-import { createMockInternalAccount } from '../../../../test/jest/mocks';
-import { toChecksumHexAddress } from '../../../../shared/modules/hexstring-utils';
+import { toAssetId } from '../../../../shared/lib/asset-utils';
 import { BridgeCTAInfoText } from '../prepare/bridge-cta-info-text';
 import { useRewards } from '../../../hooks/bridge/useRewards';
+import { createMockInternalAccount } from '../../../../test/jest/mocks';
 import { MultichainBridgeQuoteCard } from './multichain-bridge-quote-card';
 
 jest.mock('../../../hooks/bridge/useRewards', () => ({
@@ -47,19 +46,14 @@ describe('MultichainBridgeQuoteCard', () => {
         bridgeConfig: {
           maxRefreshCount: 5,
           refreshRate: 30000,
-          chainRanking: [
-            { chainId: formatChainIdToCaip(CHAIN_IDS.MAINNET) },
-            { chainId: formatChainIdToCaip(CHAIN_IDS.OPTIMISM) },
-            { chainId: formatChainIdToCaip(CHAIN_IDS.POLYGON) },
-          ],
+          chains: {
+            [CHAIN_IDS.MAINNET]: { isActiveSrc: true, isActiveDest: false },
+            [CHAIN_IDS.OPTIMISM]: { isActiveSrc: true, isActiveDest: true },
+            [CHAIN_IDS.POLYGON]: { isActiveSrc: true, isActiveDest: true },
+          },
         },
       },
       bridgeSliceOverrides: {
-        toToken: {
-          address: '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359',
-          chainId: formatChainIdToCaip(CHAIN_IDS.POLYGON),
-          assetId: `${formatChainIdToCaip(CHAIN_IDS.POLYGON)}/erc20:${toChecksumHexAddress('0x3c499c542cef5e3811e1192ce70d8cc03d5c3359')}`,
-        },
         fromTokenInputValue: '1',
         toChainId: formatChainIdToCaip(CHAIN_IDS.POLYGON),
       },
@@ -129,19 +123,14 @@ describe('MultichainBridgeQuoteCard', () => {
         bridgeConfig: {
           maxRefreshCount: 5,
           refreshRate: 30000,
-          chainRanking: [
-            { chainId: formatChainIdToCaip(CHAIN_IDS.MAINNET) },
-            { chainId: formatChainIdToCaip(CHAIN_IDS.OPTIMISM) },
-            { chainId: formatChainIdToCaip(CHAIN_IDS.POLYGON) },
-          ],
+          chains: {
+            [CHAIN_IDS.MAINNET]: { isActiveSrc: true, isActiveDest: false },
+            [CHAIN_IDS.OPTIMISM]: { isActiveSrc: true, isActiveDest: true },
+            [CHAIN_IDS.POLYGON]: { isActiveSrc: true, isActiveDest: true },
+          },
         },
       },
       bridgeSliceOverrides: {
-        toToken: {
-          address: '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359',
-          chainId: formatChainIdToCaip(CHAIN_IDS.POLYGON),
-          assetId: `${formatChainIdToCaip(CHAIN_IDS.POLYGON)}/erc20:${toChecksumHexAddress('0x3c499c542cef5e3811e1192ce70d8cc03d5c3359')}`,
-        },
         fromTokenInputValue: '1',
         toChainId: formatChainIdToCaip(CHAIN_IDS.POLYGON),
       },
@@ -234,18 +223,19 @@ describe('MultichainBridgeQuoteCard', () => {
         },
       },
       bridgeSliceOverrides: {
-        toToken: getNativeAssetForChainId(CHAIN_IDS.POLYGON),
         fromTokenInputValue: '1',
         toChainId: formatChainIdToCaip(CHAIN_IDS.POLYGON),
         slippage: 1,
       },
       bridgeStateOverrides: {
         assetExchangeRates: {
-          [`${formatChainIdToCaip(CHAIN_IDS.POLYGON)}/erc20:0x3c499c542cef5e3811e1192ce70d8cc03d5c3359`]:
-            {
-              exchangeRate: '.99',
-              usdExchangeRate: '.99',
-            },
+          [toAssetId(
+            '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359',
+            CHAIN_IDS.POLYGON,
+          ) ?? '']: {
+            exchangeRate: '.99',
+            usdExchangeRate: '.99',
+          },
         },
         quotes: mockBridgeQuotesNativeErc20 as unknown as QuoteResponse[],
         quoteRequest: {

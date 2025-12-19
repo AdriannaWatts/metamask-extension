@@ -1,8 +1,4 @@
-import {
-  ChainId,
-  formatChainIdToCaip,
-  type FeatureFlagResponse,
-} from '@metamask/bridge-controller';
+import { type FeatureFlagResponse } from '@metamask/bridge-controller';
 import { BIP44_STAGE_TWO } from '../multichain-accounts/feature-flag-mocks';
 
 export const SSE_RESPONSE_HEADER = { 'Content-Type': 'text/event-stream' };
@@ -18,27 +14,24 @@ export const DEFAULT_BRIDGE_FEATURE_FLAGS: FeatureFlagResponse & {
     '1': {
       isActiveSrc: true,
       isActiveDest: true,
+      isSingleSwapBridgeButtonEnabled: true,
     },
     '42161': {
       isActiveSrc: true,
       isActiveDest: true,
+      isSingleSwapBridgeButtonEnabled: true,
     },
     '59144': {
       isActiveSrc: true,
       isActiveDest: true,
+      isSingleSwapBridgeButtonEnabled: true,
     },
     '8453': {
       isActiveSrc: true,
       isActiveDest: true,
+      isSingleSwapBridgeButtonEnabled: true,
     },
   },
-  // @ts-expect-error chainRanking is not a valid property in the FeatureFlagResponse type yet
-  chainRanking: [
-    { chainId: formatChainIdToCaip(ChainId.ETH) },
-    { chainId: formatChainIdToCaip(ChainId.ARBITRUM) },
-    { chainId: formatChainIdToCaip(ChainId.LINEA) },
-    { chainId: formatChainIdToCaip(ChainId.BASE) },
-  ],
 };
 
 export const BRIDGE_FEATURE_FLAGS_WITH_SSE_ENABLED: FeatureFlagResponse & {

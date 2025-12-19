@@ -15,8 +15,11 @@ export enum SlippageValue {
  * Context for calculating slippage
  */
 export type SlippageContext = {
-  fromToken: BridgeToken;
-  toToken: BridgeToken;
+  fromChain: { chainId: string } | null | undefined;
+  toChain: { chainId: string } | null | undefined;
+  fromToken: BridgeToken | null;
+  toToken: BridgeToken | null;
+  isSwap: boolean;
 };
 
 /**
@@ -77,25 +80,25 @@ function isStablecoinPair(
 export function calculateSlippage(
   context: SlippageContext,
 ): number | undefined {
-  const { fromToken, toToken } = context;
+  const { fromChain, toChain, fromToken, toToken, isSwap } = context;
 
   // If no source chain, we can't determine the type
-  if (!fromToken.chainId || !toToken.chainId) {
+  if (!fromChain?.chainId || !toChain?.chainId) {
     return SlippageValue.BridgeDefault;
   }
 
   // 1. Cross-chain (bridge) → 2%
-  if (fromToken.chainId !== toToken.chainId) {
+  if (!isSwap || fromChain.chainId !== toChain.chainId) {
     return SlippageValue.BridgeDefault;
   }
 
   // 2. Solana swap → undefined (AUTO mode)
-  if (isSolanaChainId(fromToken.chainId)) {
+  if (isSolanaChainId(fromChain.chainId)) {
     return undefined;
   }
 
   // 3. EVM swap → check for stablecoin pair
-  if (isStablecoinPair(fromToken.chainId, fromToken, toToken)) {
+  if (isStablecoinPair(fromChain.chainId, fromToken, toToken)) {
     return SlippageValue.EvmStablecoin; // 0.5%
   }
 
@@ -110,21 +113,21 @@ export function calculateSlippage(
  * @param context
  */
 export function getSlippageReason(context: SlippageContext): string {
-  const { fromToken, toToken } = context;
+  const { fromChain, toChain, fromToken, toToken, isSwap } = context;
 
-  if (!fromToken?.chainId || !toToken?.chainId) {
+  if (!fromChain?.chainId || !toChain?.chainId) {
     return 'Incomplete chain setup - using bridge default';
   }
 
-  if (fromToken.chainId !== toToken.chainId) {
+  if (!isSwap || fromChain.chainId !== toChain.chainId) {
     return 'Cross-chain transaction';
   }
 
-  if (isSolanaChainId(fromToken.chainId)) {
+  if (isSolanaChainId(fromChain.chainId)) {
     return 'Solana swap (AUTO mode)';
   }
 
-  if (isStablecoinPair(fromToken.chainId, fromToken, toToken)) {
+  if (isStablecoinPair(fromChain.chainId, fromToken, toToken)) {
     return 'EVM stablecoin pair';
   }
 
