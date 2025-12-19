@@ -20,12 +20,11 @@ import {
 import { handleFetch } from '@metamask/controller-utils';
 import { Numeric } from '../../../shared/modules/Numeric';
 import { BRIDGE_CHAINID_COMMON_TOKEN_PAIR } from '../../../shared/constants/bridge';
-import { toAssetId } from '../../../shared/lib/asset-utils';
+import { getAssetImageUrl, toAssetId } from '../../../shared/lib/asset-utils';
 import {
   TRON_RESOURCE_SYMBOLS_SET,
   type TronResourceSymbol,
 } from '../../../shared/constants/multichain/assets';
-import { getImageUrlFromAssetId } from '../../pages/bridge/utils/tokens';
 import type { TokenPayload, BridgeToken } from './types';
 
 // Re-export isNonEvmChainId from bridge-controller for backward compatibility
@@ -205,12 +204,13 @@ export const toBridgeToken = (
     return null;
   }
   const caipChainId = formatChainIdToCaip(payload.chainId);
-  const assetId =payload.assetId ?? toAssetIdOrThrow(payload.chainId, payload.address);
+  const assetId =
+    payload.assetId ?? toAssetIdOrThrow(payload.chainId, payload.address);
   return {
     ...payload,
     balance: payload.balance ?? '0',
     chainId: caipChainId,
-    image: (payload.image || getImageUrlFromAssetId(assetId)) ?? '',
+    image: (payload.image || getAssetImageUrl(assetId, caipChainId)) ?? '',
     assetId,
     name: payload.name ?? payload.symbol,
     tokenFiatAmount: payload.tokenFiatAmount,
