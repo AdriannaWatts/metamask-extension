@@ -53,10 +53,10 @@ export const toAssetId = (
   if (isNativeAddress(addressToUse)) {
     return getNativeAssetForChainId(chainIdToUse)?.assetId;
   }
-  if (chainId === MultichainNetworks.SOLANA) {
+  if (chainIdToUse === MultichainNetworks.SOLANA) {
     return CaipAssetTypeStruct.create(`${chainIdToUse}/token:${addressToUse}`);
   }
-  if (chainId === MultichainNetworks.TRON) {
+  if (chainIdToUse === MultichainNetworks.TRON) {
     return CaipAssetTypeStruct.create(`${chainIdToUse}/trc20:${addressToUse}`);
   }
   // EVM assets
