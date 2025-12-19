@@ -2,7 +2,6 @@ import {
   formatChainIdToCaip,
   formatChainIdToHex,
   getNativeAssetForChainId,
-  isNonEvmChainId,
 } from '@metamask/bridge-controller';
 import { type AccountGroupId } from '@metamask/account-api';
 import { createSelector as untypedCreateSelector } from 'reselect';
@@ -48,11 +47,7 @@ const getEvmAccountAddress = (state: BridgeAppState, id: AccountGroupId) =>
   getInternalAccountByGroupAndCaip(state, id, 'eip155:1')?.address;
 
 const getAllowedHexChainIds = createSelector([getFromChains], (fromChains) =>
-  fromChains
-    .map(({ chainId }) =>
-      isNonEvmChainId(chainId) ? undefined : formatChainIdToHex(chainId),
-    )
-    .filter((chainId) => chainId !== undefined),
+  fromChains.map((chain) => chain.hexChainId).filter(Boolean),
 );
 
 const getERC20AssetsWithBalance = createSelector(
