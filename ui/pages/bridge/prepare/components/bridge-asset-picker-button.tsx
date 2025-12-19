@@ -1,5 +1,6 @@
 import React from 'react';
 import { NETWORK_TO_SHORT_NETWORK_NAME_MAP } from '../../../../../shared/constants/bridge';
+import { getAssetImageUrl } from '../../../../../shared/lib/asset-utils';
 import {
   SelectButtonProps,
   SelectButtonSize,
@@ -25,7 +26,6 @@ import {
 import { useI18nContext } from '../../../../hooks/useI18nContext';
 import { AssetPicker } from '../../../../components/multichain/asset-picker-amount/asset-picker';
 import { type BridgeToken } from '../../../../ducks/bridge/types';
-import { getImageUrlFromAssetId } from '../../utils/tokens';
 
 export const BridgeAssetPickerButton = ({
   asset,
@@ -83,7 +83,9 @@ export const BridgeAssetPickerButton = ({
           >
             {asset ? (
               <AvatarToken
-                src={asset.image || getImageUrlFromAssetId(asset.assetId)}
+                src={
+                  asset.image || getAssetImageUrl(asset.assetId, asset.chainId)
+                }
                 backgroundColor={BackgroundColor.backgroundHover}
                 name={asset.symbol}
               />
