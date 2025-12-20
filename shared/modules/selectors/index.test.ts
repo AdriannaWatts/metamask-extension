@@ -141,7 +141,7 @@ describe('Selectors', () => {
           ...state,
           metamask: {
             ...state.metamask,
-            ...mockNetworkState({ chainId: CHAIN_IDS.POLYGON }),
+            ...mockNetworkState({ chainId: CHAIN_IDS.OPTIMISM }), // OPTIMISM is not in the allowed STX chain IDs
           },
         };
         const result = getChainSupportsSmartTransactions(newState);
@@ -155,14 +155,14 @@ describe('Selectors', () => {
         const state = createMockState(); // Has allowed chain ID
         // Should be false for non-allowed chain ID regardless of state
         expect(
-          getChainSupportsSmartTransactions(state, CHAIN_IDS.POLYGON),
+          getChainSupportsSmartTransactions(state, CHAIN_IDS.OPTIMISM), // OPTIMISM is not in the allowed STX chain IDs
         ).toBe(false);
 
         const nonSupportedState = {
           ...state,
           metamask: {
             ...state.metamask,
-            ...mockNetworkState({ chainId: CHAIN_IDS.POLYGON }),
+            ...mockNetworkState({ chainId: CHAIN_IDS.OPTIMISM }), // OPTIMISM is not in the allowed STX chain IDs
           },
         };
         // Should be true for allowed chain ID regardless of state
@@ -615,12 +615,15 @@ describe('Selectors', () => {
         },
       });
 
+      // Use OPTIMISM (not in allowed STX chain IDs) to test unconfigured chain behavior
       const result = getSmartTransactionsFeatureFlagsForChain(
         state,
-        CHAIN_IDS.POLYGON,
+        CHAIN_IDS.OPTIMISM,
       );
 
-      expect(result.extensionActive).toBe(true);
+      // Controller returns false for extensionActive on unconfigured chains,
+      // but inherits numeric values like expectedDeadline/maxDeadline from default
+      expect(result.extensionActive).toBe(false);
       expect(result.expectedDeadline).toBe(45);
       expect(result.maxDeadline).toBe(150);
     });
