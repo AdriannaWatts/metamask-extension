@@ -137,9 +137,13 @@ describe('Wallet Ready Page', () => {
         url: externalUrl,
       });
 
-      const windowOpenSpy = jest
-        .spyOn(window, 'open')
-        .mockImplementation(() => null);
+      const mockAssign = jest.fn();
+      Object.defineProperty(window, 'location', {
+        value: {
+          assign: mockAssign,
+        },
+        writable: true,
+      });
 
       const browserMock = jest.requireMock('webextension-polyfill');
       (browserMock.tabs.query as jest.Mock).mockResolvedValue([
@@ -171,10 +175,8 @@ describe('Wallet Ready Page', () => {
         expect(browserMock.sidePanel.open).toHaveBeenCalledWith({
           windowId: 1,
         });
-        expect(windowOpenSpy).toHaveBeenCalledWith(externalUrl, '_self');
+        expect(mockAssign).toHaveBeenCalledWith(externalUrl);
       });
-
-      windowOpenSpy.mockRestore();
     });
 
     it('should skip side panel opening when deferred deep link with Navigate type is present', async () => {
