@@ -238,7 +238,7 @@ export default function CreationSuccessful() {
                 deferredDeepLinkResult.type ===
                 DeferredDeepLinkRouteType.Redirect
               ) {
-                window.open(deferredDeepLinkResult.url, '_self');
+                window.location.assign(deferredDeepLinkResult.url);
               } else if (
                 deferredDeepLinkResult.type ===
                 DeferredDeepLinkRouteType.Navigate
