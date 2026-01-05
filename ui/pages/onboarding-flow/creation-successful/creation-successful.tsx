@@ -261,6 +261,7 @@ export default function CreationSuccessful() {
     if (deferredDeepLinkResult) {
       if (deferredDeepLinkResult.type === DeferredDeepLinkRouteType.Redirect) {
         window.open(deferredDeepLinkResult.url, '_blank');
+        navigate(DEFAULT_ROUTE);
       } else if (
         deferredDeepLinkResult.type === DeferredDeepLinkRouteType.Navigate
       ) {
